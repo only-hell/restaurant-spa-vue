@@ -382,12 +382,12 @@ const toggleStory = () => {
 }
 .about-us-text p.about-us-intro {
     font-size: 1.2em; /* Первый абзац чуть крупнее */
-    color: var(--dark-text); /* Можно сделать его темнее или акцентным */
+    color: var(--dark-text); 
     margin-bottom: 1.5em;
 }
 .about-us-text strong {
-    font-weight: 600; /* Или 700 */
-    color: var(--bronze-gold); /* Акцент на выделенном тексте */
+    font-weight: 600; 
+    color: var(--bronze-gold); 
 }
 .about-us-quote {
     margin-top: 30px;
@@ -575,7 +575,7 @@ const toggleStory = () => {
 }
 
 #testimonials {
-    background-color: var(--cream-bg); /* Сделаем фон секции отличным от карточек */
+    background-color: var(--cream-bg); 
 }
 .testimonials-container {
   display: grid;
@@ -584,30 +584,30 @@ const toggleStory = () => {
   margin-top: 20px;
 }
 .testimonial-card {
-  background-color: var(--card-bg); /* Карточки теперь белые */
-  padding: 35px; /* Больше паддинг */
+  background-color: var(--card-bg); 
+  padding: 35px;
   border-radius: 12px;
-  box-shadow: 0 12px 35px var(--shadow-light); /* Усилил тень */
+  box-shadow: 0 12px 35px var(--shadow-light); 
   display: flex;
   flex-direction: column;
-  text-align: center; /* Центрируем текст в карточке */
-  border-top: none; /* Убрал верхнюю границу */
+  text-align: center;
+  border-top: none;
 }
-.testimonial-icon-quote { /* Контейнер для иконки кавычек */
+.testimonial-icon-quote { 
     font-size: 2.5rem;
     color: var(--soft-gold);
     margin-bottom: 15px;
     line-height: 1;
 }
-.testimonial-text { /* Убрал ::before, используем иконку FontAwesome */
+.testimonial-text { 
   margin: 0 0 20px 0;
   font-style: italic;
   color: #505050;
   flex-grow: 1;
-  font-size: 1.05em; /* Текст цитаты чуть крупнее */
+  font-size: 1.05em; 
   line-height: 1.7;
 }
-.testimonial-author { /* Переименовал из .testimonial-card cite */
+.testimonial-author { 
   display: block;
   font-weight: 600;
   color: var(--bronze-gold);

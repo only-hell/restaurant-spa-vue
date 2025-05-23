@@ -1,55 +1,99 @@
 <template>
-  <div class="reservations-view">
-    <h1>Управление бронированиями</h1>
+  <div class="admin-view reservations-view">
+    <header class="admin-header">
+      <div class="admin-header-content">
+        <h1>Управление Бронированиями</h1>
+        <p>Просмотр, создание и редактирование всех активных и будущих бронирований.</p>
+      </div>
+    </header>
 
-    <div class="controls">
-      <button @click="openAddModal" class="btn btn-primary">Добавить бронирование</button>
+    <div class="admin-main-content">
+      <section class="controls-section content-section">
+        <button @click="openAddModal" class="btn btn-primary btn-lg">
+          <i class="fas fa-calendar-plus"></i> Добавить новое бронирование
+        </button>
+      </section>
+
+      <section class="table-list-section content-section">
+        <h2 class="section-title-admin">Список Бронирований</h2>
+        <table v-if="reservations.length > 0" class="table stylish-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ID Столика</th>
+              <th>Имя гостя</th>
+              <th>Телефон</th>
+              <th>Время</th>
+              <th class="text-center">Гостей</th>
+              <th>Пожелания</th>
+              <th class="text-right">Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="reservation in reservations" :key="reservation.id">
+              <td>{{ reservation.id }}</td>
+              <td class="text-center">{{ reservation.tableId }}</td>
+              <td>{{ reservation.guestName }}</td>
+              <td>{{ reservation.guestPhone }}</td>
+              <td>{{ formatBookingTime(reservation.bookingTime) }}</td>
+              <td class="text-center">{{ reservation.numberOfGuests }}</td>
+              <td class="special-requests-cell">{{ reservation.specialRequests || '-' }}</td>
+              <td class="actions-cell">
+                <button @click="openEditModal(reservation)" class="btn btn-sm btn-action-edit">
+                  <i class="fas fa-edit"></i> Редактировать
+                </button>
+                <button @click="deleteReservation(reservation.id)" class="btn btn-sm btn-action-delete">
+                  <i class="fas fa-trash-alt"></i> Удалить
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else class="empty-state">
+          <i class="fas fa-info-circle"></i> Активных бронирований пока нет.
+        </p>
+      </section>
+
+      <section class="info-block-section content-section bg-alt-section">
+        <h2 class="section-title-admin">Эффективное Управление Бронями</h2>
+        <div class="info-cards-grid">
+          <div class="info-card">
+            <i class="fas fa-phone-volume info-icon"></i>
+            <h3>Подтверждение Брони</h3>
+            <p>Рекомендуется связываться с гостем за день до визита для подтверждения бронирования. Это снижает количество неявок и помогает лучше планировать загрузку.</p>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-user-clock info-icon"></i>
+            <h3>Время Ожидания</h3>
+            <p>Четко определите время, в течение которого столик удерживается для гостя в случае опоздания (например, 15-20 минут), и информируйте об этом при бронировании.</p>
+          </div>
+          <div class="info-card">
+            <i class="fas fa-comments info-icon"></i>
+            <h3>Особые Пожелания</h3>
+            <p>Всегда внимательно относитесь к специальным запросам гостей (аллергии, предпочтения по месту, праздничные атрибуты). Это повышает лояльность.</p>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <table v-if="reservations.length > 0" class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>ID Столика</th>
-          <th>Имя гостя</th>
-          <th>Телефон</th>
-          <th>Время</th>
-          <th>Гостей</th>
-          <th>Пожелания</th>
-          <th>Действия</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="reservation in reservations" :key="reservation.id">
-          <td>{{ reservation.id }}</td>
-          <td>{{ reservation.tableId }}</td>
-          <td>{{ reservation.guestName }}</td>
-          <td>{{ reservation.guestPhone }}</td>
-          <td>{{ formatBookingTime(reservation.bookingTime) }}</td>
-          <td>{{ reservation.numberOfGuests }}</td>
-          <td>{{ reservation.specialRequests || '-' }}</td>
-          <td>
-            <button @click="openEditModal(reservation)" class="btn btn-sm btn-warning">Редактировать</button>
-            <button @click="deleteReservation(reservation.id)" class="btn btn-sm btn-danger">Удалить</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-else class="empty-state">Бронирования пока не добавлены.</p>
-
-    <!-- Модальное окно для добавления/редактирования бронирования -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <h2>{{ isEditing ? 'Редактировать бронирование' : 'Добавить новое бронирование' }}</h2>
+        <h2 class="modal-title">{{ isEditing ? 'Редактировать бронирование' : 'Новое бронирование' }}</h2>
         <form @submit.prevent="saveReservation">
-          <div class="form-group">
-            <label for="resTableId">Столик:</label>
-            <select id="resTableId" v-model.number="currentReservation.tableId" required>
-              <option :value="null" disabled>-- Выберите столик --</option>
-              <option v-for="table in availableTables" :key="table.id" :value="table.id">
-                {{ table.name }} (ID: {{ table.id }})
-              </option>
-            </select>
+          <div class="form-row">
+            <div class="form-group column">
+              <label for="resTableId">Столик:</label>
+              <select id="resTableId" v-model.number="currentReservation.tableId" required>
+                <option :value="null" disabled>-- Выберите столик --</option>
+                <option v-for="table in availableTables" :key="table.id" :value="table.id">
+                  {{ table.name }} (ID: {{ table.id }})
+                </option>
+              </select>
+            </div>
+            <div class="form-group column">
+              <label for="resNumberOfGuests">Количество гостей:</label>
+              <input type="number" id="resNumberOfGuests" v-model.number="currentReservation.numberOfGuests" min="1" required />
+            </div>
           </div>
           <div class="form-group">
             <label for="resGuestName">Имя гостя:</label>
@@ -57,23 +101,19 @@
           </div>
           <div class="form-group">
             <label for="resGuestPhone">Телефон гостя:</label>
-            <input type="tel" id="resGuestPhone" v-model="currentReservation.guestPhone" required />
+            <input type="tel" id="resGuestPhone" v-model="currentReservation.guestPhone" placeholder="+7 (___) ___-__-__" required />
           </div>
           <div class="form-group">
             <label for="resBookingTime">Дата и время бронирования:</label>
             <input type="datetime-local" id="resBookingTime" v-model="currentReservation.bookingTime" required />
           </div>
           <div class="form-group">
-            <label for="resNumberOfGuests">Количество гостей:</label>
-            <input type="number" id="resNumberOfGuests" v-model.number="currentReservation.numberOfGuests" min="1" required />
-          </div>
-          <div class="form-group">
-            <label for="resSpecialRequests">Особые пожелания:</label>
-            <textarea id="resSpecialRequests" v-model="currentReservation.specialRequests" rows="3"></textarea>
+            <label for="resSpecialRequests">Особые пожелания (необязательно):</label>
+            <textarea id="resSpecialRequests" v-model="currentReservation.specialRequests" rows="3" placeholder="Например, аллергии, предпочтения по месту..."></textarea>
           </div>
           <div class="form-actions">
-            <button type="button" @click="closeModal" class="btn">Отмена</button>
-            <button type="submit" class="btn btn-primary">{{ isEditing ? 'Сохранить изменения' : 'Добавить' }}</button>
+            <button type="button" @click="closeModal" class="btn btn-secondary">Отмена</button>
+            <button type="submit" class="btn btn-primary">{{ isEditing ? 'Сохранить изменения' : 'Создать бронь' }}</button>
           </div>
         </form>
       </div>
@@ -82,14 +122,13 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'; // Убрал onMounted, т.к. пока не используется активно
+import { ref, reactive } from 'vue';
 
-// Данные о столиках для выпадающего списка (пока оставляем захардкоженными)
 const availableTables = ref([
-  { id: 1, name: 'Столик у окна №1' },
-  { id: 2, name: 'VIP-кабина "Уют"' },
-  { id: 3, name: 'Столик на веранде №5' },
-  { id: 4, name: 'Барный стул №12' },
+  { id: 1, name: 'Столик у окна №1', capacity: 4 },
+  { id: 2, name: 'VIP-кабина "Уют"', capacity: 6 },
+  { id: 3, name: 'Столик на веранде №5', capacity: 2 },
+  { id: 4, name: 'Барный стул №12', capacity: 1 },
 ]);
 
 const reservations = ref([
@@ -100,26 +139,25 @@ const reservations = ref([
 const showModal = ref(false);
 const isEditing = ref(false);
 
-const defaultReservationForm = () => ({
-  // id будет присвоен при сохранении или редактировании
-  tableId: null,
-  guestName: '',
-  guestPhone: '',
-  bookingTime: new Date(Date.now() + 3600 * 1000).toISOString().substring(0, 16),
-  numberOfGuests: 1,
-  specialRequests: '',
-});
-
-const currentReservation = reactive(defaultReservationForm()); // Для полей формы
-
-// Функция для переиндексации ID бронирований
-const reindexReservationIds = () => {
-  reservations.value.forEach((reservation, index) => {
-    reservation.id = index + 1;
-  });
+const defaultReservationForm = () => {
+  const now = new Date();
+  now.setHours(now.getHours() + 1); // Через час от текущего
+  now.setMinutes(0); // Обнуляем минуты для удобства выбора
+  return {
+    tableId: availableTables.value.length > 0 ? availableTables.value[0].id : null,
+    guestName: '',
+    guestPhone: '',
+    bookingTime: now.toISOString().substring(0, 16),
+    numberOfGuests: 2, // По умолчанию 2 гостя
+    specialRequests: '',
+  };
 };
 
-// Обновленная функция getNextReservationId
+const currentReservation = reactive(defaultReservationForm());
+
+const reindexReservationIds = () => {
+  reservations.value.forEach((reservation, index) => { reservation.id = index + 1; });
+};
 const getNextReservationId = () => {
   if (reservations.value.length === 0) return 1;
   return reservations.value.length + 1;
@@ -129,34 +167,30 @@ const formatBookingTime = (dateTimeString) => {
   if (!dateTimeString) return '-';
   try {
     const date = new Date(dateTimeString);
-    return date.toLocaleString('ru-RU', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  } catch (e) {
-    return dateTimeString;
-  }
+    return date.toLocaleString('ru-RU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+  } catch (e) { return dateTimeString; }
 };
 
 const openAddModal = () => {
   isEditing.value = false;
   Object.assign(currentReservation, defaultReservationForm());
-  // Устанавливаем tableId в null или первое доступное значение, если нужно
-  currentReservation.tableId = availableTables.value.length > 0 ? availableTables.value[0].id : null;
   showModal.value = true;
 };
-
 const openEditModal = (reservationToEdit) => {
   isEditing.value = true;
   Object.assign(currentReservation, { ...reservationToEdit });
   showModal.value = true;
 };
-
-const closeModal = () => {
-  showModal.value = false;
-};
+const closeModal = () => { showModal.value = false; };
 
 const saveReservation = () => {
-  // Простая валидация
   if (!currentReservation.tableId || !currentReservation.guestName || !currentReservation.guestPhone || !currentReservation.bookingTime) {
     alert('Пожалуйста, заполните все обязательные поля: Столик, Имя гостя, Телефон, Время.');
+    return;
+  }
+  const selectedTable = availableTables.value.find(t => t.id === currentReservation.tableId);
+  if (selectedTable && currentReservation.numberOfGuests > selectedTable.capacity) {
+    alert(`Количество гостей (${currentReservation.numberOfGuests}) превышает вместимость столика "${selectedTable.name}" (${selectedTable.capacity} мест).`);
     return;
   }
 
@@ -166,11 +200,7 @@ const saveReservation = () => {
       reservations.value[index] = { ...currentReservation, id: reservations.value[index].id };
     }
   } else {
-    reservations.value.push({
-      ...currentReservation,
-      id: getNextReservationId(),
-    });
-    // reindexReservationIds(); // Обычно не нужно, если getNextId корректен
+    reservations.value.push({ ...currentReservation, id: getNextReservationId() });
   }
   closeModal();
 };
@@ -178,45 +208,244 @@ const saveReservation = () => {
 const deleteReservation = (reservationIdToDelete) => {
   if (confirm('Вы уверены, что хотите отменить это бронирование?')) {
     reservations.value = reservations.value.filter(r => r.id !== reservationIdToDelete);
-    reindexReservationIds(); // Вызываем переиндексацию после удаления
+    reindexReservationIds();
   }
 };
-
 </script>
 
 <style scoped>
-/* Стили остаются такими же, как в твоем предыдущем сообщении */
-.reservations-view {
-  padding: 20px;
+/* Стили admin-view, admin-header, admin-main-content, content-section, section-title-admin,
+   modal-overlay, modal-content, modal-title, form-group, form-actions
+   идентичны или очень похожи на те, что в TablesView.vue, можно их вынести в глобальные,
+   если не хочется дублировать, но для примера я их здесь повторю с небольшими адаптациями */
+
+.admin-view {
+  background-color: var(--cream-bg);
 }
-.controls { margin-bottom: 20px; }
-.table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-.table th { background-color: #f2f2f2; font-weight: bold; }
-.table tbody tr:nth-child(even) { background-color: #f9f9f9; }
-.table tbody tr:hover { background-color: #e9e9e9; }
-.empty-state { color: #777; font-style: italic; text-align: center; margin-top: 30px; }
+.admin-header {
+  background-color: var(--bronze-gold);
+  color: var(--cream-bg);
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow: 0 4px 12px var(--shadow-medium);
+  margin-bottom: 40px;
+}
+.admin-header-content h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 0 0 10px 0;
+  color: var(--cream-bg);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.admin-header-content p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.9;
+}
+.admin-main-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+.content-section {
+  padding: 40px 0;
+}
+.section-title-admin {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  color: var(--bronze-gold);
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  position: relative;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+.section-title-admin::after {
+  content: '';
+  display: block;
+  width: 70px;
+  height: 3px;
+  background-color: var(--soft-gold);
+  margin: 15px auto 0;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px var(--shadow-light);
+}
+.controls-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.controls-section .btn-lg {
+    padding: 14px 30px;
+    font-size: 1.1rem;
+}
+.controls-section .btn i {
+    margin-right: 8px;
+}
 
-.btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-right: 5px; transition: background-color 0.2s ease; }
-.btn-primary { background-color: #007bff; color: white; }
-.btn-primary:hover { background-color: #0056b3; }
-.btn-warning { background-color: #ffc107; color: #212529; }
-.btn-warning:hover { background-color: #e0a800; }
-.btn-danger { background-color: #dc3545; color: white; }
-.btn-danger:hover { background-color: #c82333; }
-.btn-sm { padding: 5px 10px; font-size: 0.8em; }
+.stylish-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  box-shadow: 0 8px 25px var(--shadow-light);
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--card-bg);
+}
+.stylish-table th,
+.stylish-table td {
+  padding: 14px 16px; /* Чуть меньше паддинги для большего кол-ва колонок */
+  text-align: left;
+  border-bottom: 1px solid #e8e3da;
+  vertical-align: middle;
+  font-size: 0.95em; /* Текст в таблице чуть меньше */
+}
+.stylish-table th {
+  background-color: #f8f5f0;
+  font-weight: 600;
+  color: var(--bronze-gold);
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.5px;
+}
+.stylish-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.stylish-table tbody tr:hover {
+  background-color: #fdfaf6;
+}
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.special-requests-cell {
+    max-width: 200px; /* Ограничиваем ширину колонки с пожеланиями */
+    white-space: normal; /* Разрешаем перенос текста */
+    word-break: break-word;
+}
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-.modal-content { background-color: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); width: 90%; max-width: 550px; }
-.modal-content h2 { margin-top: 0; margin-bottom: 25px; color: #333; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+.actions-cell .btn { margin-left: 8px; }
+.btn-action-edit {
+  background-color: var(--soft-gold); color: var(--dark-text); border-color: var(--soft-gold);
+}
+.btn-action-edit:hover { background-color: #b8946e; border-color: #b8946e; color: white; }
+.btn-action-delete { background-color: #e74c3c; color: white; border-color: #e74c3c; }
+.btn-action-delete:hover { background-color: #c0392b; border-color: #c0392b; }
+.actions-cell .btn i { margin-right: 5px; }
+
+.empty-state {
+  color: #777; font-style: italic; text-align: center; margin-top: 40px;
+  padding: 30px; background-color: var(--card-bg); border-radius: 8px;
+  box-shadow: 0 5px 15px var(--shadow-light); font-size: 1.1em;
+}
+.empty-state i { margin-right: 10px; color: var(--soft-gold); }
+
+.info-block-section { padding-top: 60px; }
+.bg-alt-section {
+  background-color: var(--card-bg);
+  box-shadow: 0 0 50px rgba(0,0,0,0.04) inset;
+}
+.admin-main-content > .bg-alt-section {
+    margin-left: -30px; margin-right: -30px; padding-left: 30px; padding-right: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+.info-card {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px var(--shadow-light);
+  text-align: left;
+  border-top: 4px solid var(--bronze-gold);
+}
+.info-icon {
+  font-size: 2.2rem; color: var(--bronze-gold); margin-bottom: 15px; display: block;
+}
+.info-card h3 {
+  font-size: 1.4rem; margin-bottom: 10px; color: var(--bronze-gold);
+}
+.info-card p {
+  font-size: 0.95em; line-height: 1.6; color: var(--dark-text);
+}
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Темнее фон */
+  display: flex; justify-content: center; align-items: center; z-index: 1050;
+}
+.modal-content {
+  background-color: var(--card-bg); padding: 35px 40px; border-radius: 12px;
+  box-shadow: 0 12px 45px var(--shadow-medium); /* Более выраженная тень */
+  width: 90%; max-width: 600px; /* Чуть шире для формы бронирования */
+}
+.modal-title {
+  font-family: 'Playfair Display', serif; font-size: 1.9rem; /* Крупнее */
+  margin-top: 0; margin-bottom: 30px; color: var(--bronze-gold);
+  text-align: center; padding-bottom: 15px; border-bottom: 1px solid #eee;
+}
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.form-group.column {
+    flex: 1;
+    margin-bottom: 0; /* Убираем нижний отступ, так как он у .form-row */
+}
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; margin-bottom: 8px; font-weight: 600;
+  font-size: 0.95em; color: var(--dark-text);
+}
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="tel"],
 .form-group input[type="datetime-local"],
 .form-group select,
-.form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-.form-actions { margin-top: 20px; text-align: right; }
-.form-actions .btn { margin-left: 10px; }
+.form-group textarea {
+  width: 100%; padding: 12px 15px; border: 1px solid #ccc;
+  border-radius: 6px; box-sizing: border-box; font-family: 'Lato', sans-serif;
+  font-size: 1em; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--soft-gold);
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.2); /* Используем переменную, если есть */
+    outline: none;
+}
+.form-group textarea {
+    min-height: 80px; /* Минимальная высота для textarea */
+}
+.form-actions { margin-top: 30px; text-align: right; }
+.form-actions .btn { margin-left: 10px; padding: 10px 25px; }
+
+@media (max-width: 768px) {
+    .admin-header { padding: 30px 20px; margin-bottom: 30px; }
+    .admin-header-content h1 { font-size: clamp(1.8rem, 4.5vw, 2.5rem); }
+    .admin-main-content { padding: 0 20px; }
+    .main-page-content > .bg-alt-section { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;}
+    .section-title-admin { font-size: clamp(1.6rem, 4vw, 2rem); }
+    .stylish-table th, .stylish-table td { padding: 10px 12px; font-size: 0.9em; }
+    .actions-cell .btn { display: inline-block; width: auto; margin: 5px; } /* Кнопки в строку на мобильных, если влезут */
+    .info-cards-grid { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; gap: 0; margin-bottom: 0; } /* Поля в модалке в столбец */
+    .form-group.column { margin-bottom: 20px; }
+}
+@media (max-width: 480px) {
+    .admin-main-content { padding: 0 15px; }
+    .main-page-content > .bg-alt-section { margin-left: -15px; margin-right: -15px; padding-left: 15px; padding-right: 15px;}
+    .stylish-table { font-size: 0.85em; }
+}
 </style>

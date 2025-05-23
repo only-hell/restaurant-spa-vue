@@ -6,9 +6,9 @@
       </div>
       <div class="nav-links-container">
         <router-link to="/" class="nav-link">Главная</router-link>
-        <router-link to="/tables" class="nav-link">Столики (Админ)</router-link>
-        <router-link to="/reservations" class="nav-link">Брони (Админ)</router-link>
-        <router-link to="/menu" class="nav-link">Меню (Админ)</router-link>
+        <router-link to="/tables" class="nav-link">План зала</router-link> 
+        <router-link to="/reservations" class="nav-link">Бронирование</router-link>
+        <router-link to="/menu" class="nav-link">Редактор Меню</router-link> 
       </div>
     </nav>
     <main class="main-content">
