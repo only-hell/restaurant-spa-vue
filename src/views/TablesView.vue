@@ -116,6 +116,17 @@ const getStatusText = (status) => {
   return statuses[status] || status;
 };
 
+
+const getNextId = () => {
+  if (tables.value.length === 0) {
+    return 1; // Если столиков нет, начинаем с 1
+  }
+  // Находим максимальный ID среди существующих столиков
+  const maxId = Math.max(...tables.value.map(table => table.id));
+  return maxId + 1;
+};
+
+
 const getStatusClass = (status) => {
   return `status-${status}`;
 };
@@ -147,14 +158,13 @@ const saveTable = () => {
     // Редактирование существующего столика
     const index = tables.value.findIndex(t => t.id === currentTable.id);
     if (index !== -1) {
-      // Важно: создаем новый объект, чтобы Vue точно отследил изменения
       tables.value[index] = { ...currentTable };
     }
   } else {
     // Добавление нового столика
     const newTable = {
-      ...currentTable, // Копируем данные из формы
-      id: Date.now(), // Генерируем новый ID
+      ...currentTable,
+      id: getNextId(), // <--- ИСПОЛЬЗУЕМ НОВУЮ ФУНКЦИЮ ЗДЕСЬ
     };
     tables.value.push(newTable);
   }
