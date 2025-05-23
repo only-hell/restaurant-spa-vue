@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-view tables-view"> 
+  <div class="admin-view tables-view">
     <header class="admin-header">
       <div class="admin-header-content">
         <h1>Управление Столиками</h1>
@@ -7,56 +7,61 @@
       </div>
     </header>
 
-    <div class="admin-main-content"> 
+    <div class="admin-main-content">
       <section class="controls-section content-section">
-        <button @click="openAddModal" class="btn btn-primary btn-lg">
+        <button @click="openAddModal" class="btn btn-primary btn-lg-admin">
           <i class="fas fa-plus-circle"></i> Добавить новый столик
         </button>
       </section>
 
       <section class="table-list-section content-section">
         <h2 class="section-title-admin">Список Столиков</h2>
-        <table v-if="tables.length > 0" class="table stylish-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Название/Номер</th>
-              <th>Мест</th>
-              <th>Статус</th>
-              <th>Расположение</th>
-              <th>Курение</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="table in tables" :key="table.id">
-              <td>{{ table.id }}</td>
-              <td>{{ table.name }}</td>
-              <td class="text-center">{{ table.capacity }}</td>
-              <td>
-                <span :class="['status-badge', getStatusClass(table.status)]">
-                  {{ getStatusText(table.status) }}
-                </span>
-              </td>
-              <td>{{ table.location }}</td>
-              <td class="text-center">{{ table.isSmokingAllowed ? 'Да' : 'Нет' }}</td>
-              <td class="actions-cell">
-                <button @click="openEditModal(table)" class="btn btn-sm btn-action-edit">
-                  <i class="fas fa-edit"></i> Редактировать
-                </button>
-                <button @click="deleteTable(table.id)" class="btn btn-sm btn-action-delete">
-                  <i class="fas fa-trash-alt"></i> Удалить
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        
+        <div v-if="tables.length > 0" class="table-container"> 
+          <table class="table stylish-table responsive-table"> 
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Название/Номер</th>
+                <th class="text-center">Мест</th>
+                <th>Статус</th>
+                <th>Расположение</th>
+                <th class="text-center">Курение</th>
+                <th class="actions-header text-right">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="table in tables" :key="table.id">
+                <td data-label="ID">{{ table.id }}</td>
+                <td data-label="Название/Номер">{{ table.name }}</td>
+                <td data-label="Мест" class="text-center">{{ table.capacity }}</td>
+                <td data-label="Статус">
+                  <span :class="['status-badge', getStatusClass(table.status)]">
+                    {{ getStatusText(table.status) }}
+                  </span>
+                </td>
+                <td data-label="Расположение">{{ table.location }}</td>
+                <td data-label="Курение" class="text-center">{{ table.isSmokingAllowed ? 'Да' : 'Нет' }}</td>
+                <td data-label="Действия" class="actions-cell">
+                  <button @click="openEditModal(table)" class="btn btn-sm btn-action-edit">
+                    <i class="fas fa-edit"></i> <span class="btn-text-desktop">Редактировать</span>
+                  </button>
+                  <button @click="deleteTable(table.id)" class="btn btn-sm btn-action-delete">
+                    <i class="fas fa-trash-alt"></i> <span class="btn-text-desktop">Удалить</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <p v-else class="empty-state">
           <i class="fas fa-info-circle"></i> Столики пока не добавлены. Нажмите "Добавить новый столик", чтобы начать.
         </p>
       </section>
 
-      <section class="info-block-section content-section bg-alt-section">
+     
+      <section class="info-block-section content-section bg-alt-section-admin">
         <h2 class="section-title-admin">Полезная Информация</h2>
         <div class="info-cards-grid">
           <div class="info-card">
@@ -78,6 +83,7 @@
       </section>
     </div>
 
+ 
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h2 class="modal-title">{{ isEditing ? 'Редактировать столик' : 'Добавить новый столик' }}</h2>
@@ -106,7 +112,6 @@
             <input type="checkbox" id="tableSmoking" v-model="currentTable.isSmokingAllowed" />
             <label for="tableSmoking">Разрешено курение</label>
           </div>
-
           <div class="form-actions">
             <button type="button" @click="closeModal" class="btn btn-secondary">Отмена</button>
             <button type="submit" class="btn btn-primary">{{ isEditing ? 'Сохранить' : 'Добавить' }}</button>
@@ -118,62 +123,37 @@
 </template>
 
 <script setup>
+// ... (весь <script setup> остается таким же, как в твоем коде)
 import { ref, reactive } from 'vue';
 
 const tables = ref([
   { id: 1, name: 'Столик у окна №1', capacity: 4, status: 'free', location: 'Основной зал', isSmokingAllowed: false },
   { id: 2, name: 'VIP-кабина "Уют"', capacity: 6, status: 'reserved', location: 'VIP-зона', isSmokingAllowed: false },
   { id: 3, name: 'Столик на веранде №5', capacity: 2, status: 'occupied', location: 'Веранда', isSmokingAllowed: true },
-  { id: 4, name: 'Барный стул №12', capacity: 1, status: 'free', location: 'Бар', isSmokingAllowed: true },
+  { id: 4, name: 'Барный стул №12 с очень очень очень длинным названием чтобы проверить перенос', capacity: 1, status: 'free', location: 'Бар у центрального входа и рядом с панорамным окном', isSmokingAllowed: true },
 ]);
 
 const showModal = ref(false);
 const isEditing = ref(false);
 const defaultTableForm = () => ({
-  name: '',
-  capacity: 1,
-  status: 'free',
-  location: '',
-  isSmokingAllowed: false,
+  name: '', capacity: 1, status: 'free', location: '', isSmokingAllowed: false,
 });
 const currentTable = reactive(defaultTableForm());
 
-const getStatusText = (status) => {
-  const statuses = { free: 'Свободен', reserved: 'Зарезервирован', occupied: 'Занят' };
-  return statuses[status] || status;
-};
+const getStatusText = (status) => ({ free: 'Свободен', reserved: 'Зарезервирован', occupied: 'Занят' }[status] || status);
 const getStatusClass = (status) => `status-${status}`;
+const reindexTableIds = () => tables.value.forEach((table, index) => { table.id = index + 1; });
+const getNextId = () => (tables.value.length === 0 ? 1 : tables.value.length + 1);
 
-const reindexTableIds = () => {
-  tables.value.forEach((table, index) => { table.id = index + 1; });
-};
-const getNextId = () => {
-  if (tables.value.length === 0) return 1;
-  return tables.value.length + 1;
-};
-
-const openAddModal = () => {
-  isEditing.value = false;
-  Object.assign(currentTable, defaultTableForm());
-  showModal.value = true;
-};
-const openEditModal = (tableToEdit) => {
-  isEditing.value = true;
-  Object.assign(currentTable, { ...tableToEdit });
-  showModal.value = true;
-};
+const openAddModal = () => { isEditing.value = false; Object.assign(currentTable, defaultTableForm()); showModal.value = true; };
+const openEditModal = (tableToEdit) => { isEditing.value = true; Object.assign(currentTable, { ...tableToEdit }); showModal.value = true; };
 const closeModal = () => { showModal.value = false; };
 
 const saveTable = () => {
-  if (!currentTable.name || currentTable.capacity < 1) {
-    alert('Пожалуйста, введите название столика и корректное количество мест.');
-    return;
-  }
+  if (!currentTable.name || currentTable.capacity < 1) { alert('Пожалуйста, введите название столика и корректное количество мест.'); return; }
   if (isEditing.value) {
     const index = tables.value.findIndex(t => t.id === currentTable.id);
-    if (index !== -1) {
-      tables.value[index] = { ...currentTable, id: tables.value[index].id };
-    }
+    if (index !== -1) tables.value[index] = { ...currentTable, id: tables.value[index].id };
   } else {
     tables.value.push({ ...currentTable, id: getNextId() });
   }
@@ -189,321 +169,189 @@ const deleteTable = (tableIdToDelete) => {
 </script>
 
 <style scoped>
-/* Общие стили для админ-страниц */
-.admin-view {
-  background-color: var(--cream-bg); /* Основной фон страницы */
-}
+/* Копируем и адаптируем стили из ReservationsView.vue, но для таблиц используем "card-view" на мобильных */
 
-.admin-header {
-  background-color: var(--bronze-gold); /* Акцентный цвет для хедера */
-  color: var(--cream-bg); /* Светлый текст */
-  padding: 40px 30px;
-  text-align: center;
-  box-shadow: 0 4px 12px var(--shadow-medium);
-  margin-bottom: 40px;
-}
-.admin-header-content h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 5vw, 3rem);
-  margin: 0 0 10px 0;
-  color: var(--cream-bg); /* Явно светлый */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-}
-.admin-header-content p {
-  font-size: 1.1rem;
-  margin: 0;
-  opacity: 0.9;
-}
+/* Общие стили админки (идентичны ReservationsView) */
+.admin-view { background-color: var(--cream-bg); padding-bottom: 60px; }
+.admin-header { background: linear-gradient(135deg, var(--bronze-gold) 0%, var(--soft-gold) 100%); color: white; padding: 50px 30px; text-align: center; box-shadow: 0 5px 20px var(--shadow-medium); margin-bottom: 40px; border-bottom: 4px solid var(--bronze-gold); }
+.admin-header-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5.5vw, 3.2rem); margin: 0 0 15px 0; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.35); }
+.admin-header-content p { font-size: 1.15rem; margin: 0; opacity: 0.95; font-weight: 300; }
+.admin-main-content { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 30px; box-sizing: border-box; }
+.content-section { padding: 30px 0; margin-bottom: 30px; }
+.bg-alt-section-admin { background-color: var(--card-bg); padding: 35px; border-radius: 12px; box-shadow: 0 10px 30px var(--shadow-light); }
+.admin-main-content > .bg-alt-section-admin { margin-left: -30px; margin-right: -30px; padding-left: 30px; padding-right: 30px; }
+.section-title-admin { font-family: 'Playfair Display', serif; font-size: clamp(1.7rem, 3.5vw, 2.2rem); color: var(--bronze-gold); text-align: center; margin-bottom: 30px; padding-bottom: 15px; position: relative; }
+.section-title-admin::after { content: ''; display: block; width: 65px; height: 3px; background-color: var(--soft-gold); margin: 15px auto 0; border-radius: 2px; box-shadow: 0 1px 3px var(--shadow-light); }
+.controls-section { text-align: center; margin-bottom: 30px; }
+.btn-lg-admin { padding: 14px 30px; font-size: 1.1rem; box-shadow: 0 4px 12px var(--shadow-medium); font-family: 'Lato', sans-serif; }
+.controls-section .btn i { margin-right: 10px; }
 
-.admin-main-content {
+
+.table-container { /* Замена .table-responsive-wrapper */
   width: 100%;
-  max-width: 1200px; /* Чуть шире для админки */
-  margin: 0 auto;
-  padding: 0 30px;
-  box-sizing: border-box;
+  margin-bottom: 25px;
 }
 
-.content-section {
-  padding: 40px 0; /* Отступы между секциями */
-}
-
-.section-title-admin {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.8rem, 4vw, 2.4rem);
-  color: var(--bronze-gold);
-  text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  position: relative;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-}
-.section-title-admin::after {
-  content: '';
-  display: block;
-  width: 70px;
-  height: 3px;
-  background-color: var(--soft-gold);
-  margin: 15px auto 0;
-  border-radius: 2px;
-  box-shadow: 0 1px 2px var(--shadow-light);
-}
-
-.controls-section {
-  text-align: center; 
-  margin-bottom: 30px;
-}
-.controls-section .btn-lg { /* Если кнопка будет большая */
-    padding: 14px 30px;
-    font-size: 1.1rem;
-}
-.controls-section .btn i {
-    margin-right: 8px;
-}
-
-
-/* Стилизация таблицы */
 .stylish-table {
   width: 100%;
-  border-collapse: separate; /* Для использования border-spacing и border-radius на ячейках */
-  border-spacing: 0;
-  margin-top: 20px;
+  border-collapse: collapse;
+  background-color: var(--card-bg);
   box-shadow: 0 8px 25px var(--shadow-light);
-  border-radius: 10px; /* Скругление всей таблицы */
-  overflow: hidden; /* Чтобы скругление работало для a:first-child/last-child */
-  background-color: var(--card-bg); /* Фон таблицы */
+  border-radius: 10px;
+  overflow: hidden;
 }
+
 .stylish-table th,
 .stylish-table td {
-  padding: 15px 18px; /* Увеличил паддинги */
+  padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #e8e3da; /* Светлая граница между строками */
+  border-bottom: 1px solid #f0ebe3;
   vertical-align: middle;
-}
-.stylish-table th {
-  background-color: #f8f5f0; /* Чуть темнее основного фона для заголовков */
-  font-weight: 600; /* Жирнее заголовки */
-  color: var(--bronze-gold);
-  font-family: 'Lato', sans-serif;
-  text-transform: uppercase;
   font-size: 0.9em;
-  letter-spacing: 0.5px;
 }
+
+.stylish-table th {
+  background-color: #f9f6f2;
+  font-weight: 600;
+  color: var(--bronze-gold);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.75px;
+  white-space: nowrap; /* Заголовки не переносим на десктопе */
+}
+.stylish-table th.actions-header,
+.stylish-table th.text-right {
+    text-align: right;
+}
+
 .stylish-table tbody tr:last-child td {
-  border-bottom: none; /* Убираем границу у последней строки */
+  border-bottom: none;
 }
 .stylish-table tbody tr:hover {
-  background-color: #fdfaf6; /* Легкая подсветка строки при наведении */
+  background-color: #fdfaf6;
 }
-.text-center {
-  text-align: center;
-}
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 15px;
-  color: white;
-  font-size: 0.85em;
-  font-weight: 500;
-  min-width: 100px;
-  display: inline-block;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.status-free { background-color: #28a745; }
-.status-reserved { background-color: #ffc107; color: #333; }
-.status-occupied { background-color: #dc3545; }
+.text-center { text-align: center !important; }
 
-.actions-cell {
-  text-align: right; /* Кнопки действий справа */
-  white-space: nowrap; /* Чтобы кнопки не переносились */
+.status-badge { /* Стили идентичны TablesView */
+  padding: 6px 12px; border-radius: 18px; color: white; font-size: 0.75rem;
+  font-weight: 600; min-width: 95px; display: inline-block; text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.status-free { background-color: #27ae60; }
+.status-reserved { background-color: #f39c12; color: #fff; }
+.status-occupied { background-color: #c0392b; }
+
+.actions-cell { /* Стили идентичны TablesView */
+  text-align: right;
+  white-space: nowrap;
 }
 .actions-cell .btn {
-  margin-left: 8px;
+  margin-left: 8px; padding: 6px 10px; font-size: 0.8rem;
+  box-shadow: 0 1px 3px var(--shadow-light);
 }
-.btn-action-edit {
-  background-color: var(--soft-gold);
-  color: var(--dark-text);
-  border-color: var(--soft-gold);
-}
-.btn-action-edit:hover {
-  background-color: #b8946e;
-  border-color: #b8946e;
-  color: white;
-}
-.btn-action-delete {
-  background-color: #e74c3c; /* Более мягкий красный */
-  color: white;
-  border-color: #e74c3c;
-}
-.btn-action-delete:hover {
-  background-color: #c0392b;
-  border-color: #c0392b;
-}
-.actions-cell .btn i {
-    margin-right: 5px;
-}
+.actions-cell .btn i { margin-right: 5px; }
+.btn-text-desktop { /* Текст для кнопок, скрываемый на мобильных */ }
 
 
-.empty-state {
-  color: #777;
-  font-style: italic;
-  text-align: center;
-  margin-top: 40px;
-  padding: 30px;
-  background-color: var(--card-bg);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px var(--shadow-light);
-  font-size: 1.1em;
-}
-.empty-state i {
-    margin-right: 10px;
-    color: var(--soft-gold);
-}
-
-/* Информационные карточки */
-.info-block-section {
-    padding-top: 60px; /* Отступ сверху для этой секции */
-}
-.info-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  margin-top: 20px;
-}
-.info-card {
-  background-color: var(--card-bg);
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 8px 25px var(--shadow-light);
-  text-align: left;
-  border-top: 4px solid var(--bronze-gold); /* Акцент сверху */
-}
-.info-icon {
-  font-size: 2.2rem;
-  color: var(--bronze-gold);
-  margin-bottom: 15px;
-  display: block; /* Для отступа снизу */
-}
-.info-card h3 {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
-  color: var(--bronze-gold);
-}
-.info-card p {
-  font-size: 0.95em;
-  line-height: 1.6;
-  color: var(--dark-text);
-}
-
-
-/* Стили для модального окна */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.65); /* Чуть темнее фон */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1050; /* Выше навбара */
-}
-.modal-content {
-  background-color: var(--card-bg);
-  padding: 35px 40px; /* Больше паддинги */
-  border-radius: 12px; /* Больше скругление */
-  box-shadow: 0 10px 40px var(--shadow-medium);
-  width: 90%;
-  max-width: 550px; /* Чуть шире */
-}
-.modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem; /* Крупнее заголовок модалки */
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: var(--bronze-gold);
-  text-align: center;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-.form-group {
-  margin-bottom: 20px; /* Больше отступ между полями */
-}
-.form-group label {
-  display: block;
-  margin-bottom: 8px; /* Больше отступ у лейбла */
-  font-weight: 600;
-  font-size: 0.95em;
-  color: var(--dark-text);
-}
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select {
-  width: 100%;
-  padding: 12px 15px; /* Комфортнее паддинги */
-  border: 1px solid #ccc;
-  border-radius: 6px; /* Скругление полей */
-  box-sizing: border-box;
-  font-family: 'Lato', sans-serif;
-  font-size: 1em;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.form-group input:focus, .form-group select:focus {
-    border-color: var(--soft-gold);
-    box-shadow: 0 0 0 3px rgba(197, 164, 126, 0.25); /* Подсветка при фокусе */
-    outline: none;
-}
-.checkbox-group {
-  display: flex;
-  align-items: center;
-}
-.checkbox-group input[type="checkbox"] {
-  margin-right: 10px;
-  width: auto; /* Чтобы чекбокс не растягивался */
-  height: 1.1em; /* Для лучшего вида */
-  accent-color: var(--bronze-gold); /* Цвет самого чекбокса */
-}
-.checkbox-group label {
-    margin-bottom: 0; /* Убираем отступ у лейбла чекбокса */
-    font-weight: normal;
-}
-.form-actions {
-  margin-top: 30px;
-  text-align: right;
-}
-.form-actions .btn {
-  margin-left: 10px;
-  padding: 10px 25px; /* Кнопки в модалке побольше */
-}
-.form-actions .btn-secondary {
-  /* Стили из App.vue */
-}
-.form-actions .btn-primary {
-  /* Стили из App.vue */
-}
-
-/* Адаптивность для админ-страниц */
+/* Адаптивная таблица: превращение в "карточки" на мобильных */
 @media (max-width: 768px) {
-    .admin-header { padding: 30px 20px; margin-bottom: 30px; }
-    .admin-header-content h1 { font-size: clamp(1.8rem, 4.5vw, 2.5rem); }
-    .admin-header-content p { font-size: 1rem; }
-    .admin-main-content { padding: 0 20px; }
-    .section-title-admin { font-size: clamp(1.6rem, 4vw, 2rem); margin-bottom: 25px; }
-
-    .stylish-table th, .stylish-table td { padding: 10px 12px; font-size: 0.9em; }
-    .status-badge { min-width: 90px; font-size: 0.8em; padding: 5px 10px;}
-    .actions-cell { text-align: center; }
-    .actions-cell .btn { display: block; width: 100%; margin: 5px 0; }
-
-    .info-cards-grid { grid-template-columns: 1fr; } /* Карточки информации в одну колонку */
-    .modal-content { padding: 25px; }
-    .modal-title { font-size: 1.5rem; margin-bottom: 20px; }
+  .stylish-table thead {
+    display: none;
+  }
+  .stylish-table, .stylish-table tbody, .stylish-table tr, .stylish-table td {
+    display: block;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  .stylish-table tr {
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    overflow: hidden;
+    border: 1px solid #e0dacd;
+    background-color: var(--card-bg); /* Фон для каждой карточки */
+  }
+  .stylish-table td {
+    text-align: right;
+    padding-left: 45%; /* Увеличил немного место для лейбла */
+    position: relative;
+    border-bottom: 1px dotted #eee;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .stylish-table td:last-child {
+    border-bottom: none;
+  }
+  .stylish-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    width: calc(45% - 20px); /* Ширина для заголовка */
+    padding-right: 10px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--bronze-gold);
+    font-size: 0.8em; /* Лейбл чуть меньше */
+  }
+  .stylish-table td.text-center, .stylish-table td.text-right {
+      text-align: right;
+  }
+  .actions-cell {
+    text-align: center;
+    padding-top: 15px;
+  }
+  .actions-cell .btn {
+    display: inline-block;
+    margin: 5px;
+    width: auto;
+  }
+  .btn-text-desktop {
+    display: none;
+  }
 }
 
+/* ... (остальные стили для empty-state, info-block, modal и их адаптивности как в ReservationsView) ... */
+.empty-state { color: #666; font-style: normal; text-align: center; margin-top: 30px; padding: 30px; background-color: var(--card-bg); border-radius: 10px; box-shadow: 0 6px 20px var(--shadow-light); font-size: 1.05em; border: 1px dashed var(--soft-gold); }
+.empty-state i { margin-right: 12px; color: var(--bronze-gold); font-size: 1.2em; }
+.info-block-section { padding-top: 30px; }
+.info-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+.info-card { background-color: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 7px 22px var(--shadow-light); text-align: left; border-top: 4px solid var(--bronze-gold); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.info-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--shadow-medium); }
+.info-icon { font-size: 2rem; color: var(--bronze-gold); margin-bottom: 18px; display: block; }
+.info-card h3 { font-size: 1.3rem; margin-bottom: 12px; color: var(--bronze-gold); }
+.info-card p { font-size: 0.9rem; line-height: 1.65; color: var(--dark-text); }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(30, 20, 10, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1050; }
+.modal-content { background-color: var(--card-bg); padding: 30px 35px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); width: 90%; max-width: 520px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; margin-top: 0; margin-bottom: 25px; color: var(--bronze-gold); text-align: center; padding-bottom: 15px; border-bottom: 1px solid #e0dacd; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 0.9rem; color: var(--dark-text); }
+.form-group input[type="text"], .form-group input[type="number"], .form-group select { width: 100%; padding: 10px 14px; border: 1px solid #d0c9bf; border-radius: 5px; box-sizing: border-box; font-family: 'Lato', sans-serif; font-size: 0.95em; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: #fff; }
+.form-group input:focus, .form-group select:focus { border-color: var(--soft-gold); box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2); outline: none; }
+.checkbox-group { display: flex; align-items: center; }
+.checkbox-group input[type="checkbox"] { margin-right: 10px; width: auto; height: 1.1em; accent-color: var(--bronze-gold); }
+.checkbox-group label { margin-bottom: 0; font-weight: normal; }
+.form-actions { margin-top: 25px; text-align: right; }
+.form-actions .btn { margin-left: 10px; padding: 9px 22px; }
+
+@media (max-width: 992px) {
+    .admin-main-content { max-width: 100%; padding: 0 20px; }
+    .admin-main-content > .bg-alt-section-admin { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;}
+}
+@media (max-width: 768px) {
+    .admin-header { padding: 30px 15px; margin-bottom: 25px; }
+    .admin-header-content h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); }
+    .admin-main-content { padding: 0 10px; }
+    .admin-main-content > .bg-alt-section-admin { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px;}
+    .section-title-admin { font-size: clamp(1.4rem, 4vw, 1.8rem); }
+    /* Для .stylish-table адаптивные стили уже применены выше */
+    .info-cards-grid { grid-template-columns: 1fr; }
+    .modal-content { padding: 20px; width: calc(100% - 20px); margin: 10px;}
+    .modal-title { font-size: 1.3rem; }
+}
 @media (max-width: 480px) {
-    .admin-main-content { padding: 0 15px; }
-    .stylish-table { font-size: 0.85em; } /* Весь текст в таблице мельче */
-    .stylish-table th, .stylish-table td { padding: 8px 10px; }
+    /* Для .stylish-table адаптивные стили уже применены выше */
+    .admin-header-content p { font-size: 0.9rem; }
+    .btn-lg-admin { padding: 10px 20px; font-size: 0.95rem; }
 }
-
 </style>

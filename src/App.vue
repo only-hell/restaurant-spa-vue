@@ -4,35 +4,71 @@
       <div class="nav-logo">
         <router-link to="/">Золотой Гусь</router-link>
       </div>
-      <div class="nav-links-container">
-        <router-link to="/" class="nav-link">Главная</router-link>
-        <router-link to="/tables" class="nav-link">План зала</router-link> 
-        <router-link to="/reservations" class="nav-link">Бронирование</router-link>
-        <router-link to="/menu" class="nav-link">Редактор Меню</router-link> 
+      <button class="nav-toggler" @click="toggleMobileMenu" :class="{ 'active': isMobileMenuOpen }" aria-label="Toggle navigation" aria-expanded="isMobileMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div class="nav-links-container" :class="{ 'open': isMobileMenuOpen }">
+        <router-link to="/" class="nav-link" @click="closeMobileMenu">Главная</router-link>
+        <router-link to="/tables" class="nav-link" @click="closeMobileMenu">План зала</router-link>
+        <router-link to="/reservations" class="nav-link" @click="closeMobileMenu">Бронирование</router-link>
+        <router-link to="/menu" class="nav-link" @click="closeMobileMenu">Редактор Меню</router-link>
       </div>
     </nav>
     <main class="main-content">
       <router-view />
     </main>
+    <footer class="app-footer" id="footer-contacts">
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+            <p class="footer-logo-small">Золотой Гусь</p>
+            <p>"Место, где каждый момент становится особенным"</p>
+        </div>
+        <div class="footer-contacts">
+            <p><i class="fas fa-map-marker-alt"></i> ул. Гастрономическая, 10, г. Примербург</p>
+            <p><i class="fas fa-phone"></i> +7 (123) 456-78-90</p>
+        </div>
+        <div class="footer-social">
+            <p>Следите за нами:</p>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="VK"><i class="fab fa-vk"></i></a>
+        </div>
+        <div class="footer-copy">
+            <p>© {{ new Date().getFullYear() }} "Золотой Гусь". Все права защищены.</p>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup>
-// Логика для App.vue, если понадобится
+import { ref } from 'vue';
+// import { RouterLink, RouterView } from 'vue-router'; // Не обязательно, если используем глобально
+
+const isMobileMenuOpen = ref(false);
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
+};
 </script>
 
 <style>
-/* ГЛОБАЛЬНЫЕ СТИЛИ */
 :root {
-  --bronze-gold: #b8860b; /* Более насыщенный бронзово-золотой, основной акцент */
-  --soft-gold: #c5a47e;   /* Приглушенный золотисто-бежевый (для деталей, линий) */
-  --cream-bg: #f4f0e8;    /* Новый основной фон - теплый, слоновая кость */
-  --card-bg: #ffffff;     /* Чисто белый фон для карточек и светлых секций */
-  --dark-text: #3a3a3a;   /* Темно-серый для основного текста */
-  --light-text: #f0f0f0;  /* Светлый текст для темных фонов */
-  --shadow-light: rgba(0, 0, 0, 0.06); /* Легкие тени */
-  --shadow-medium: rgba(0, 0, 0, 0.12); /* Средние тени */
-  --shadow-dark: rgba(0, 0, 0, 0.18); /* Более выраженные тени */
+  --bronze-gold: #b8860b;
+  --soft-gold: #c5a47e;
+  --cream-bg: #f9f6f2;
+  --card-bg: #ffffff;
+  --dark-text: #3a3a3a;
+  --light-text: #f0f0f0;
+  --shadow-light: rgba(0, 0, 0, 0.06);
+  --shadow-medium: rgba(0, 0, 0, 0.12);
+  --shadow-dark: rgba(0, 0, 0, 0.18);
 }
 
 html, body {
@@ -48,7 +84,7 @@ body {
   background-color: var(--cream-bg);
   color: var(--dark-text);
   line-height: 1.7;
-  font-size: 16px; /* Базовый размер */
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -60,10 +96,9 @@ body {
   width: 100%;
 }
 
-/* Навбар */
 .navbar {
-  background-color: var(--card-bg); /* Светлый фон */
-  padding: 0 40px;
+  background-color: var(--card-bg);
+  padding: 0 20px; /* Уменьшил горизонтальный паддинг для мобильных */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -74,13 +109,13 @@ body {
   z-index: 1000;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 3px 12px var(--shadow-light); /* Мягкая, но заметная тень */
-  height: 75px;
+  box-shadow: 0 3px 12px var(--shadow-light);
+  height: 70px;
 }
 
 .nav-logo a {
   font-family: 'Playfair Display', serif;
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   color: var(--bronze-gold);
   text-decoration: none;
   font-weight: 700;
@@ -89,46 +124,52 @@ body {
 
 .nav-links-container {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
 .nav-link {
   color: var(--bronze-gold);
   text-decoration: none;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border-radius: 4px;
   transition: color 0.25s ease, background-color 0.25s ease;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   position: relative;
 }
-
 .nav-link::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--bronze-gold);
-  transition: width 0.3s ease;
+  content: ''; position: absolute; width: 0; height: 2px;
+  bottom: -4px; left: 50%; transform: translateX(-50%);
+  background-color: var(--bronze-gold); transition: width 0.3s ease;
 }
-
 .nav-link:hover::after,
-.nav-link.router-link-exact-active::after {
-  width: 60%;
-}
-.nav-link:hover{
-    color: #a0720a; /* Темнее бронза при наведении */
-}
+.nav-link.router-link-exact-active::after { width: 60%; }
+.nav-link:hover{ color: #a0720a; }
+.nav-link.router-link-exact-active { color: var(--bronze-gold); font-weight: 700; }
 
-.nav-link.router-link-exact-active {
-  color: var(--bronze-gold);
-  font-weight: 700;
+.nav-toggler {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1010;
+  margin-left: auto; /* Чтобы был справа, если ссылки скрыты */
 }
+.nav-toggler span {
+  width: 30px; height: 3px; background: var(--bronze-gold);
+  border-radius: 10px; transition: all 0.3s linear;
+  position: relative; transform-origin: 1px;
+}
+.nav-toggler.active span:nth-child(1) { transform: translateY(0px) rotate(45deg); transform-origin: center; margin-top:11px; }
+.nav-toggler.active span:nth-child(2) { opacity: 0; transform: translateX(20px); }
+.nav-toggler.active span:nth-child(3) { transform: translateY(0px) rotate(-45deg); transform-origin: center; margin-top:-11px; }
 
 .main-content {
   flex-grow: 1;
@@ -136,56 +177,120 @@ body {
   box-sizing: border-box;
 }
 
-/* ОБЩИЕ СТИЛИ ДЛЯ КНОПОК */
-.btn {
-  display: inline-block;
-  padding: 12px 30px;
-  font-size: 0.95rem;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, color 0.2s ease;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
+.app-footer {
+  background-color: #262626;
+  color: #a0a0a0;
+  padding: 25px 30px;
   text-align: center;
-  letter-spacing: 0.8px;
-  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  border-top: 1px solid #383838;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+.app-footer .footer-content-wrapper {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    align-items: start;
+    text-align: left; /* Возвращаем для колонок */
+}
+.footer-logo-small {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--soft-gold);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+.app-footer .footer-info p, .app-footer .footer-contacts p {
+  margin: 4px 0;
+  line-height: 1.6;
+}
+.app-footer .footer-contacts i {
+    margin-right: 8px;
+    color: var(--soft-gold);
+    width: 15px;
+    text-align: center;
+}
+.app-footer .footer-social { margin-top: 5px; }
+.app-footer .footer-social p { margin-bottom: 8px; font-weight: 600; color: #ccc; }
+.app-footer .footer-social a {
+    color: #ccc; margin-right: 12px; font-size: 1.2rem; transition: color 0.2s ease;
+}
+.app-footer .footer-social a:hover { color: var(--soft-gold); }
+.app-footer .footer-social a:last-child { margin-right: 0; }
+.app-footer .footer-copy {
+    grid-column: 1 / -1; text-align: center; margin-top: 20px;
+    padding-top: 15px; border-top: 1px solid #383838;
+    font-size: 0.8rem; color: #888;
+}
+
+.btn {
+  display: inline-block; padding: 12px 30px; font-size: 0.95rem;
+  text-decoration: none; border-radius: 6px;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, color 0.2s ease;
+  font-weight: 600; cursor: pointer; border: 1px solid transparent;
+  text-align: center; letter-spacing: 0.8px; font-family: 'Lato', sans-serif;
   box-shadow: 0 3px 8px var(--shadow-light);
 }
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px var(--shadow-medium);
-}
-.btn:active {
-  transform: translateY(0px);
-  box-shadow: 0 2px 5px var(--shadow-light);
-}
-
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 12px var(--shadow-medium); }
+.btn:active { transform: translateY(0px); box-shadow: 0 2px 5px var(--shadow-light); }
 .btn-primary {
-  background-color: var(--bronze-gold);
-  color: var(--cream-bg);
-  border-color: var(--bronze-gold);
+  background-color: var(--bronze-gold); color: var(--cream-bg); border-color: var(--bronze-gold);
 }
-.btn-primary:hover {
-  background-color: #a0720a;
-  border-color: #a0720a;
-  color: white;
-}
-
+.btn-primary:hover { background-color: #a0720a; border-color: #a0720a; color: white; }
 .btn-secondary {
-  background-color: transparent;
-  color: var(--bronze-gold);
-  border-color: var(--bronze-gold);
+  background-color: transparent; color: var(--bronze-gold); border-color: var(--bronze-gold);
 }
-.btn-secondary:hover {
-  background-color: var(--bronze-gold);
-  color: var(--cream-bg);
-}
-
-/* Админские кнопки */
+.btn-secondary:hover { background-color: var(--bronze-gold); color: var(--cream-bg); }
 .btn-warning { background-color: #ffc107; color: #212529; border-color: #ffc107;}
 .btn-warning:hover { background-color: #e0a800; border-color: #e0a800;}
 .btn-danger { background-color: #dc3545; color: white; border-color: #dc3545;}
 .btn-danger:hover { background-color: #c82333; border-color: #c82333;}
 .btn-sm { padding: 6px 12px; font-size: 0.85rem;}
+
+@media (max-width: 920px) { /* Точка перелома для бургер-меню, подбери точнее */
+  .nav-links-container {
+    display: none;
+    flex-direction: column;
+    align-items: center; /* Центрируем ссылки в моб. меню */
+    position: absolute;
+    top: 70px; /* Высота навбара */
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    box-shadow: 0 5px 10px var(--shadow-light);
+    padding: 10px 0; /* Отступы для выпадающего списка */
+    border-top: 1px solid #eee;
+  }
+  .nav-links-container.open {
+    display: flex;
+  }
+  .nav-link {
+    width: 90%; /* Ссылки занимают почти всю ширину */
+    text-align: center;
+    padding: 12px 0; /* Увеличим кликабельную область */
+    margin: 5px 0; /* Отступы между ссылками */
+    border-bottom: none; /* Убираем границу, если была */
+  }
+  .nav-link::after { display: none; } /* Убираем подчеркивание */
+  .nav-link.router-link-exact-active, .nav-link:hover {
+      background-color: var(--cream-bg);
+      color: var(--bronze-gold);
+  }
+  .nav-toggler {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+    .app-footer .footer-content-wrapper { grid-template-columns: 1fr; text-align: center; }
+    .app-footer .footer-info, .app-footer .footer-contacts, .app-footer .footer-social {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+     .app-footer .footer-social a { margin: 0 8px; }
+}
 </style>
