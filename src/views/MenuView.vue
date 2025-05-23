@@ -166,7 +166,6 @@ const deleteMenuItem = (itemIdToDelete) => {
 </script>
 
 <style scoped>
-/* Стили остаются такими же, как в твоем предыдущем сообщении */
 .menu-view {
   padding: 20px;
 }
