@@ -213,7 +213,6 @@ const deleteReservation = (resIdToDelete) => {
 </script>
 
 <style scoped>
-/* ... (стили админки до таблицы остаются) ... */
 .admin-view { background-color: var(--cream-bg); padding-bottom: 60px; }
 .admin-header { background: linear-gradient(135deg, var(--bronze-gold) 0%, var(--soft-gold) 100%); color: white; padding: 50px 30px; text-align: center; box-shadow: 0 5px 20px var(--shadow-medium); margin-bottom: 40px; border-bottom: 4px solid var(--bronze-gold); }
 .admin-header-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5.5vw, 3.2rem); margin: 0 0 15px 0; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.35); }
@@ -228,14 +227,14 @@ const deleteReservation = (resIdToDelete) => {
 .btn-lg-admin { padding: 14px 30px; font-size: 1.1rem; box-shadow: 0 4px 12px var(--shadow-medium); font-family: 'Lato', sans-serif; }
 .controls-section .btn i { margin-right: 10px; }
 
-.table-container { /* Замена .table-responsive-wrapper */
+.table-container {
   width: 100%;
   margin-bottom: 25px;
 }
 
 .stylish-table {
   width: 100%;
-  border-collapse: collapse; /* Используем collapse для адаптивной таблицы */
+  border-collapse: collapse;
   background-color: var(--card-bg);
   box-shadow: 0 8px 25px var(--shadow-light);
   border-radius: 10px;
@@ -271,14 +270,14 @@ const deleteReservation = (resIdToDelete) => {
 .stylish-table tbody tr:hover {
   background-color: #fdfaf6;
 }
-.text-center { text-align: center !important; } /* Добавил !important для переопределения */
+.text-center { text-align: center !important; } 
 
 .special-requests-cell {
-    white-space: normal; /* Разрешаем перенос */
+    white-space: normal; 
     word-break: break-word;
     font-size: 0.85em;
     color: #555;
-    min-width: 180px; /* Даем минимальную ширину, чтобы не сжималась слишком сильно */
+    min-width: 180px; 
 }
 .actions-cell {
   text-align: right;
@@ -291,7 +290,6 @@ const deleteReservation = (resIdToDelete) => {
 }
 .actions-cell .btn i { margin-right: 5px; }
 .btn-text-desktop { /* Текст для кнопок, который будет виден на десктопе */
-  /* На мобильных его можно будет скрыть, если нужно */
 }
 
 
@@ -313,8 +311,8 @@ const deleteReservation = (resIdToDelete) => {
     border: 1px solid #e0dacd;
   }
   .stylish-table td {
-    text-align: right; /* Значение справа */
-    padding-left: 50%; /* Место для data-label */
+    text-align: right;
+    padding-left: 50%; 
     position: relative;
     border-bottom: 1px dotted #eee; /* Разделитель между "полями" карточки */
   }
@@ -322,10 +320,10 @@ const deleteReservation = (resIdToDelete) => {
     border-bottom: none;
   }
   .stylish-table td::before {
-    content: attr(data-label); /* Отображаем заголовок из data-label */
+    content: attr(data-label); 
     position: absolute;
     left: 10px;
-    width: calc(50% - 20px); /* Ширина для заголовка */
+    width: calc(50% - 20px); 
     padding-right: 10px;
     font-weight: 600;
     text-align: left;
@@ -333,28 +331,28 @@ const deleteReservation = (resIdToDelete) => {
     color: var(--bronze-gold);
   }
   .stylish-table td.text-center, .stylish-table td.text-right {
-      text-align: right; /* Все значения справа на мобильных */
+      text-align: right; 
   }
   .actions-cell {
-    text-align: center; /* Кнопки по центру на мобильных */
-    padding-top: 15px; /* Отступ сверху для кнопок */
+    text-align: center; 
+    padding-top: 15px;
   }
   .actions-cell .btn {
-    display: inline-block; /* Кнопки в строку, если помещаются */
+    display: inline-block; 
     margin: 5px;
     width: auto;
   }
   .btn-text-desktop {
-    display: none; /* Скрываем текст "Редактировать/Удалить" на мобильных */
+    display: none; 
   }
-  .special-requests-cell { /* Пожелания на мобильных */
-      min-width: auto; /* Сбрасываем min-width */
-      text-align: left; /* Текст слева */
-      padding-left: 10px; /* Убираем отступ для data-label, так как он будет сверху */
+  .special-requests-cell { 
+      min-width: auto; 
+      text-align: left; 
+      padding-left: 10px; 
   }
   .special-requests-cell::before {
-      width: 100%; /* Заголовок "Пожелания" на всю ширину */
-      position: static; /* Возвращаем в поток */
+      width: 100%; 
+      position: static; 
       display: block;
       margin-bottom: 5px;
       text-align: left;
@@ -362,7 +360,6 @@ const deleteReservation = (resIdToDelete) => {
 }
 
 
-/* ... (остальные стили для empty-state, info-block, modal и их адаптивности остаются как в предыдущем ответе) ... */
 .empty-state {
   color: #666; font-style: normal; text-align: center; margin-top: 30px;
   padding: 30px; background-color: var(--card-bg); border-radius: 10px;
@@ -432,7 +429,7 @@ const deleteReservation = (resIdToDelete) => {
     .admin-main-content { max-width: 100%; padding: 0 20px; }
     .admin-main-content > .bg-alt-section-admin { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;}
 }
-@media (max-width: 768px) { /* Основные изменения для адаптивной таблицы здесь */
+@media (max-width: 768px) { 
     .admin-header { padding: 30px 15px; margin-bottom: 25px; }
     .admin-header-content h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); }
     .admin-main-content { padding: 0 10px; }
@@ -449,7 +446,6 @@ const deleteReservation = (resIdToDelete) => {
 }
 
 @media (max-width: 480px) {
-    /* Стили для совсем маленьких экранов, если нужны доп. правки */
     .admin-header-content p { font-size: 0.9rem; }
     .btn-lg-admin { padding: 10px 20px; font-size: 0.95rem; }
 }

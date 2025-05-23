@@ -174,7 +174,6 @@ const deleteMenuItem = (itemIdToDelete) => {
 </script>
 
 <style scoped>
-/* Копируем и адаптируем стили из предыдущих админ-страниц */
 .admin-view { background-color: var(--cream-bg); padding-bottom: 60px; }
 .admin-header { background: linear-gradient(135deg, var(--bronze-gold) 0%, var(--soft-gold) 100%); color: white; padding: 50px 30px; text-align: center; box-shadow: 0 5px 20px var(--shadow-medium); margin-bottom: 40px; border-bottom: 4px solid var(--bronze-gold); }
 .admin-header-content h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 5.5vw, 3.2rem); margin: 0 0 15px 0; color: white; text-shadow: 2px 2px 5px rgba(0,0,0,0.35); }
@@ -231,16 +230,16 @@ const deleteMenuItem = (itemIdToDelete) => {
 .item-description {
     font-size: 0.85em;
     color: #555;
-    white-space: normal; /* Разрешаем перенос для описания */
+    white-space: normal; 
     word-break: break-word;
-    min-width: 200px; /* Минимальная ширина для описания */
+    min-width: 200px; 
 }
 .category-badge {
     background-color: var(--soft-gold);
     color: var(--dark-text);
-    padding: 5px 12px; /* Увеличил паддинг */
-    border-radius: 15px; /* Более круглый */
-    font-size: 0.75em; /* Чуть меньше */
+    padding: 5px 12px; 
+    border-radius: 15px; 
+    font-size: 0.75em; 
     font-weight: 600;
     display: inline-block;
     box-shadow: 0 1px 3px var(--shadow-light);
@@ -251,14 +250,13 @@ const deleteMenuItem = (itemIdToDelete) => {
 .actions-cell .btn i { margin-right: 5px; }
 .btn-text-desktop { /* Скрывается на мобильных */ }
 
-.empty-state { /* ... как в TablesView ... */ }
-.info-block-section { /* ... как в TablesView ... */ }
-.bg-alt-section { /* ... если используется, как в TablesView ... */ }
-.info-cards-grid { /* ... как в TablesView ... */ }
-.info-card { /* ... как в TablesView ... */ }
-.info-icon { /* ... как в TablesView ... */ }
-.modal-overlay, .modal-content, .modal-title, .form-row, .form-group, .form-actions { /* ... как в ReservationsView ... */ }
-/* Скопируйте стили для .empty-state, .info-block-section и т.д., а также .modal-* из предыдущих файлов */
+.empty-state { 
+.info-block-section { 
+.bg-alt-section { 
+.info-cards-grid { 
+.info-card {
+.info-icon {
+.modal-overlay, .modal-content, .modal-title, .form-row, .form-group, .form-actions {
 .empty-state { color: #666; font-style: normal; text-align: center; margin-top: 30px; padding: 30px; background-color: var(--card-bg); border-radius: 10px; box-shadow: 0 6px 20px var(--shadow-light); font-size: 1.05em; border: 1px dashed var(--soft-gold); }
 .empty-state i { margin-right: 12px; color: var(--bronze-gold); font-size: 1.2em; }
 .info-block-section { padding-top: 30px; }

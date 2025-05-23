@@ -98,7 +98,7 @@ body {
 
 .navbar {
   background-color: var(--card-bg);
-  padding: 0 20px; /* Уменьшил горизонтальный паддинг для мобильных */
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -160,7 +160,7 @@ body {
   cursor: pointer;
   padding: 0;
   z-index: 1010;
-  margin-left: auto; /* Чтобы был справа, если ссылки скрыты */
+  margin-left: auto; 
 }
 .nav-toggler span {
   width: 30px; height: 3px; background: var(--bronze-gold);
@@ -251,7 +251,7 @@ body {
 .btn-danger:hover { background-color: #c82333; border-color: #c82333;}
 .btn-sm { padding: 6px 12px; font-size: 0.85rem;}
 
-@media (max-width: 920px) { /* Точка перелома для бургер-меню, подбери точнее */
+@media (max-width: 920px) {
   .nav-links-container {
     display: none;
     flex-direction: column;
@@ -269,13 +269,13 @@ body {
     display: flex;
   }
   .nav-link {
-    width: 90%; /* Ссылки занимают почти всю ширину */
+    width: 90%; 
     text-align: center;
-    padding: 12px 0; /* Увеличим кликабельную область */
-    margin: 5px 0; /* Отступы между ссылками */
-    border-bottom: none; /* Убираем границу, если была */
+    padding: 12px 0;
+    margin: 5px 0; 
+    border-bottom: none; 
   }
-  .nav-link::after { display: none; } /* Убираем подчеркивание */
+  .nav-link::after { display: none; } 
   .nav-link.router-link-exact-active, .nav-link:hover {
       background-color: var(--cream-bg);
       color: var(--bronze-gold);

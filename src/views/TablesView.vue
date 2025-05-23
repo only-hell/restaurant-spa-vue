@@ -187,7 +187,7 @@ const deleteTable = (tableIdToDelete) => {
 .controls-section .btn i { margin-right: 10px; }
 
 
-.table-container { /* Замена .table-responsive-wrapper */
+.table-container { 
   width: 100%;
   margin-bottom: 25px;
 }
@@ -217,7 +217,7 @@ const deleteTable = (tableIdToDelete) => {
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.75px;
-  white-space: nowrap; /* Заголовки не переносим на десктопе */
+  white-space: nowrap;
 }
 .stylish-table th.actions-header,
 .stylish-table th.text-right {
@@ -273,7 +273,7 @@ const deleteTable = (tableIdToDelete) => {
   }
   .stylish-table td {
     text-align: right;
-    padding-left: 45%; /* Увеличил немного место для лейбла */
+    padding-left: 45%;
     position: relative;
     border-bottom: 1px dotted #eee;
     padding-top: 10px;
@@ -292,7 +292,7 @@ const deleteTable = (tableIdToDelete) => {
     text-align: left;
     white-space: nowrap;
     color: var(--bronze-gold);
-    font-size: 0.8em; /* Лейбл чуть меньше */
+    font-size: 0.8em;
   }
   .stylish-table td.text-center, .stylish-table td.text-right {
       text-align: right;
@@ -344,13 +344,11 @@ const deleteTable = (tableIdToDelete) => {
     .admin-main-content { padding: 0 10px; }
     .admin-main-content > .bg-alt-section-admin { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px;}
     .section-title-admin { font-size: clamp(1.4rem, 4vw, 1.8rem); }
-    /* Для .stylish-table адаптивные стили уже применены выше */
     .info-cards-grid { grid-template-columns: 1fr; }
     .modal-content { padding: 20px; width: calc(100% - 20px); margin: 10px;}
     .modal-title { font-size: 1.3rem; }
 }
 @media (max-width: 480px) {
-    /* Для .stylish-table адаптивные стили уже применены выше */
     .admin-header-content p { font-size: 0.9rem; }
     .btn-lg-admin { padding: 10px 20px; font-size: 0.95rem; }
 }

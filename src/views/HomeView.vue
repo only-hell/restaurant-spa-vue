@@ -207,7 +207,7 @@ const toggleStory = () => {
 </script>
 
 <style scoped>
-/* Общие стили для HomeView */
+
 .home-view {
   font-size: 17px;
 }
@@ -307,7 +307,6 @@ const toggleStory = () => {
   width: auto;
   min-width: 200px;
   padding: 14px 28px;
-  /* Все три кнопки теперь .btn-primary */
 }
 
 .section-title {
@@ -315,7 +314,7 @@ const toggleStory = () => {
   margin-bottom: 60px;
   position: relative;
   padding-bottom: 25px;
-  text-shadow: 1px 1px 3px rgba(184, 134, 11, 0.2); /* Тень с бронзовым оттенком */
+  text-shadow: 1px 1px 3px rgba(184, 134, 11, 0.2);
 }
 .section-title::after {
   content: '';
@@ -343,7 +342,7 @@ const toggleStory = () => {
   text-align: center;
 }
 .bg-alt-section {
-  background-color: var(--card-bg); /* Белый */
+  background-color: var(--card-bg); 
   box-shadow: 0 0 50px rgba(0,0,0,0.04) inset;
 }
 .main-page-content > .bg-alt-section {
@@ -381,7 +380,7 @@ const toggleStory = () => {
   line-height: 1.85;
 }
 .about-us-text p.about-us-intro {
-    font-size: 1.2em; /* Первый абзац чуть крупнее */
+    font-size: 1.2em;
     color: var(--dark-text); 
     margin-bottom: 1.5em;
 }
@@ -507,7 +506,7 @@ const toggleStory = () => {
 }
 .guest-card img {
   width: 100%;
-  aspect-ratio: 3 / 4.2; /* Сделал еще чуть выше */
+  aspect-ratio: 3 / 4.2;
   object-fit: cover;
   display: block;
   transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -571,7 +570,7 @@ const toggleStory = () => {
   margin-top: 10px;
   padding: 12px 30px;
   font-size: 0.95rem;
-  /* Теперь btn-primary */
+ 
 }
 
 #testimonials {
@@ -622,7 +621,7 @@ const toggleStory = () => {
   border-radius: 12px;
   border: 1px solid #e8e3da;
   border-left: 6px solid var(--soft-gold);
-  box-shadow: 0 10px 30px var(--shadow-light); /* Тень */
+  box-shadow: 0 10px 30px var(--shadow-light);
 }
 .special-offer-card h3 { font-size: 1.75rem; }
 
