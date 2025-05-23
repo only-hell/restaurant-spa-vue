@@ -88,37 +88,46 @@ const menuItems = ref([
   { id: 6, name: 'Морс клюквенный', category: 'Напитки', price: 150.00, description: 'Домашний клюквенный морс, 0.5л.', isVegetarian: true },
 ]);
 
-// Доступные категории для выпадающего списка
 const availableCategories = ref(['Закуски', 'Салаты', 'Супы', 'Горячее', 'Гарниры', 'Десерты', 'Напитки', 'Алкоголь']);
 
 const showModal = ref(false);
 const isEditing = ref(false);
 
 const defaultMenuItemForm = () => ({
-  id: null,
+  // id будет присвоен при сохранении или редактировании
   name: '',
-  category: '', // По умолчанию категория не выбрана
+  category: '',
   price: 0,
   description: '',
   isVegetarian: false,
 });
 
-const currentItem = reactive(defaultMenuItemForm());
+const currentItem = reactive(defaultMenuItemForm()); // Для полей формы
 
+// Функция для переиндексации ID позиций меню
+const reindexMenuItemIds = () => {
+  menuItems.value.forEach((item, index) => {
+    item.id = index + 1;
+  });
+};
+
+// Обновленная функция getNextMenuItemId
 const getNextMenuItemId = () => {
   if (menuItems.value.length === 0) return 1;
-  return Math.max(...menuItems.value.map(item => item.id)) + 1;
+  return menuItems.value.length + 1;
 };
 
 const openAddModal = () => {
   isEditing.value = false;
   Object.assign(currentItem, defaultMenuItemForm());
+  // Устанавливаем категорию по умолчанию или оставляем пустой для выбора
+  currentItem.category = ''; // Чтобы в select отображалось "-- Выберите категорию --"
   showModal.value = true;
 };
 
-const openEditModal = (item) => {
+const openEditModal = (itemToEdit) => {
   isEditing.value = true;
-  Object.assign(currentItem, item);
+  Object.assign(currentItem, { ...itemToEdit });
   showModal.value = true;
 };
 
@@ -135,28 +144,29 @@ const saveMenuItem = () => {
   if (isEditing.value) {
     const index = menuItems.value.findIndex(i => i.id === currentItem.id);
     if (index !== -1) {
-      menuItems.value[index] = { ...currentItem };
+      menuItems.value[index] = { ...currentItem, id: menuItems.value[index].id };
     }
   } else {
     menuItems.value.push({
       ...currentItem,
       id: getNextMenuItemId(),
     });
+    // reindexMenuItemIds(); // Обычно не нужно, если getNextId корректен
   }
   closeModal();
 };
 
-const deleteMenuItem = (itemId) => {
+const deleteMenuItem = (itemIdToDelete) => {
   if (confirm('Вы уверены, что хотите удалить эту позицию из меню?')) {
-    menuItems.value = menuItems.value.filter(item => item.id !== itemId);
+    menuItems.value = menuItems.value.filter(item => item.id !== itemIdToDelete);
+    reindexMenuItemIds(); // Вызываем переиндексацию после удаления
   }
 };
 
 </script>
 
 <style scoped>
-/* Стили можно скопировать из ReservationsView.vue или TablesView.vue и адаптировать */
-/* Общие стили для view */
+/* Стили остаются такими же, как в твоем предыдущем сообщении */
 .menu-view {
   padding: 20px;
 }
@@ -171,9 +181,9 @@ const deleteMenuItem = (itemId) => {
 }
 .table th, .table td {
   border: 1px solid #ddd;
-  padding: 12px; /* Можно настроить */
+  padding: 12px;
   text-align: left;
-  vertical-align: top; /* Для длинных описаний */
+  vertical-align: top;
 }
 .table th {
   background-color: #f2f2f2;
@@ -192,7 +202,6 @@ const deleteMenuItem = (itemId) => {
   margin-top: 30px;
 }
 
-/* Кнопки (можно вынести в глобальные стили) */
 .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-right: 5px; transition: background-color 0.2s ease; }
 .btn-primary { background-color: #007bff; color: white; }
 .btn-primary:hover { background-color: #0056b3; }
@@ -202,7 +211,6 @@ const deleteMenuItem = (itemId) => {
 .btn-danger:hover { background-color: #c82333; }
 .btn-sm { padding: 5px 10px; font-size: 0.8em; }
 
-/* Стили для модального окна и формы */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .modal-content { background-color: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); width: 90%; max-width: 550px; }
 .modal-content h2 { margin-top: 0; margin-bottom: 25px; color: #333; }
@@ -212,14 +220,14 @@ const deleteMenuItem = (itemId) => {
 .form-group input[type="number"],
 .form-group select,
 .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-.form-group input[type="checkbox"] { /* Стили для чекбокса */
+.form-group input[type="checkbox"] {
   margin-right: 8px;
   vertical-align: middle;
 }
-.checkbox-label { /* Для выравнивания текста рядом с чекбоксом */
+.checkbox-label {
   display: flex;
   align-items: center;
-  font-weight: normal; /* Убираем жирность с label для чекбокса */
+  font-weight: normal;
 }
 .form-actions { margin-top: 20px; text-align: right; }
 .form-actions .btn { margin-left: 10px; }

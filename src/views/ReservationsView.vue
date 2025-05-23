@@ -41,52 +41,36 @@
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h2>{{ isEditing ? 'Редактировать бронирование' : 'Добавить новое бронирование' }}</h2>
-                <form @submit.prevent="saveReservation">
-          <!-- Поле для Столика -->
+        <form @submit.prevent="saveReservation">
           <div class="form-group">
             <label for="resTableId">Столик:</label>
-            <!-- Вариант с select -->
             <select id="resTableId" v-model.number="currentReservation.tableId" required>
               <option :value="null" disabled>-- Выберите столик --</option>
               <option v-for="table in availableTables" :key="table.id" :value="table.id">
                 {{ table.name }} (ID: {{ table.id }})
               </option>
             </select>
-            <!-- Или вариант с input type="number", который был в первоначальном коде, если select пока не нужен: -->
-            <!-- <input type="number" id="resTableId" v-model.number="currentReservation.tableId" required placeholder="ID столика"/> -->
           </div>
-
-          <!-- Поле для Имени гостя -->
           <div class="form-group">
             <label for="resGuestName">Имя гостя:</label>
             <input type="text" id="resGuestName" v-model="currentReservation.guestName" required />
           </div>
-
-          <!-- Поле для Телефона гостя -->
           <div class="form-group">
             <label for="resGuestPhone">Телефон гостя:</label>
             <input type="tel" id="resGuestPhone" v-model="currentReservation.guestPhone" required />
           </div>
-
-          <!-- Поле для Даты и времени -->
           <div class="form-group">
             <label for="resBookingTime">Дата и время бронирования:</label>
             <input type="datetime-local" id="resBookingTime" v-model="currentReservation.bookingTime" required />
           </div>
-
-          <!-- Поле для Количества гостей -->
           <div class="form-group">
             <label for="resNumberOfGuests">Количество гостей:</label>
             <input type="number" id="resNumberOfGuests" v-model.number="currentReservation.numberOfGuests" min="1" required />
           </div>
-
-          <!-- Поле для Особых пожеланий -->
           <div class="form-group">
             <label for="resSpecialRequests">Особые пожелания:</label>
             <textarea id="resSpecialRequests" v-model="currentReservation.specialRequests" rows="3"></textarea>
           </div>
-
-          <!-- Кнопки действий -->
           <div class="form-actions">
             <button type="button" @click="closeModal" class="btn">Отмена</button>
             <button type="submit" class="btn btn-primary">{{ isEditing ? 'Сохранить изменения' : 'Добавить' }}</button>
@@ -98,20 +82,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'; // Добавляем onMounted
+import { ref, reactive } from 'vue'; // Убрал onMounted, т.к. пока не используется активно
 
-// --- Начало секции для данных о столиках (для выпадающего списка) ---
-// Это временное решение, в идеале столики должны приходить из общего хранилища (Vuex/Pinia) или через props/emits
-// Пока просто захардкодим несколько для примера выбора
+// Данные о столиках для выпадающего списка (пока оставляем захардкоженными)
 const availableTables = ref([
   { id: 1, name: 'Столик у окна №1' },
   { id: 2, name: 'VIP-кабина "Уют"' },
   { id: 3, name: 'Столик на веранде №5' },
   { id: 4, name: 'Барный стул №12' },
-  // В реальном приложении этот список нужно будет получать динамически
 ]);
-// --- Конец секции для данных о столиках ---
-
 
 const reservations = ref([
   { id: 1, tableId: 2, guestName: 'Иван Петров', guestPhone: '+79001234567', bookingTime: '2024-07-20T19:00', numberOfGuests: 2, specialRequests: 'У окна, если возможно' },
@@ -122,20 +101,28 @@ const showModal = ref(false);
 const isEditing = ref(false);
 
 const defaultReservationForm = () => ({
-  id: null,
+  // id будет присвоен при сохранении или редактировании
   tableId: null,
   guestName: '',
   guestPhone: '',
-  bookingTime: new Date(Date.now() + 3600 * 1000).toISOString().substring(0, 16), // По умолчанию через час от текущего
+  bookingTime: new Date(Date.now() + 3600 * 1000).toISOString().substring(0, 16),
   numberOfGuests: 1,
   specialRequests: '',
 });
 
-const currentReservation = reactive(defaultReservationForm());
+const currentReservation = reactive(defaultReservationForm()); // Для полей формы
 
+// Функция для переиндексации ID бронирований
+const reindexReservationIds = () => {
+  reservations.value.forEach((reservation, index) => {
+    reservation.id = index + 1;
+  });
+};
+
+// Обновленная функция getNextReservationId
 const getNextReservationId = () => {
   if (reservations.value.length === 0) return 1;
-  return Math.max(...reservations.value.map(r => r.id)) + 1;
+  return reservations.value.length + 1;
 };
 
 const formatBookingTime = (dateTimeString) => {
@@ -144,19 +131,21 @@ const formatBookingTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
     return date.toLocaleString('ru-RU', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   } catch (e) {
-    return dateTimeString; // Если формат неверный, вернуть как есть
+    return dateTimeString;
   }
 };
 
 const openAddModal = () => {
   isEditing.value = false;
   Object.assign(currentReservation, defaultReservationForm());
+  // Устанавливаем tableId в null или первое доступное значение, если нужно
+  currentReservation.tableId = availableTables.value.length > 0 ? availableTables.value[0].id : null;
   showModal.value = true;
 };
 
-const openEditModal = (reservation) => {
+const openEditModal = (reservationToEdit) => {
   isEditing.value = true;
-  Object.assign(currentReservation, reservation);
+  Object.assign(currentReservation, { ...reservationToEdit });
   showModal.value = true;
 };
 
@@ -165,48 +154,44 @@ const closeModal = () => {
 };
 
 const saveReservation = () => {
-  // Проверка, чтобы количество гостей не превышало вместимость столика (если есть данные)
-  // const selectedTable = availableTables.value.find(t => t.id === currentReservation.tableId);
-  // if (selectedTable && selectedTable.capacity && currentReservation.numberOfGuests > selectedTable.capacity) {
-  //   alert(`Количество гостей (${currentReservation.numberOfGuests}) превышает вместимость столика "${selectedTable.name}" (${selectedTable.capacity} мест).`);
-  //   return;
-  // }
+  // Простая валидация
+  if (!currentReservation.tableId || !currentReservation.guestName || !currentReservation.guestPhone || !currentReservation.bookingTime) {
+    alert('Пожалуйста, заполните все обязательные поля: Столик, Имя гостя, Телефон, Время.');
+    return;
+  }
 
   if (isEditing.value) {
     const index = reservations.value.findIndex(r => r.id === currentReservation.id);
     if (index !== -1) {
-      reservations.value[index] = { ...currentReservation };
+      reservations.value[index] = { ...currentReservation, id: reservations.value[index].id };
     }
   } else {
     reservations.value.push({
       ...currentReservation,
       id: getNextReservationId(),
     });
+    // reindexReservationIds(); // Обычно не нужно, если getNextId корректен
   }
   closeModal();
 };
 
-const deleteReservation = (reservationId) => {
+const deleteReservation = (reservationIdToDelete) => {
   if (confirm('Вы уверены, что хотите отменить это бронирование?')) {
-    reservations.value = reservations.value.filter(r => r.id !== reservationId);
+    reservations.value = reservations.value.filter(r => r.id !== reservationIdToDelete);
+    reindexReservationIds(); // Вызываем переиндексацию после удаления
   }
 };
-
-// Если бы мы хотели подгружать столики из TablesView.vue, это было бы сложнее без общего хранилища.
-// onMounted(() => {
-//   // Здесь могла бы быть логика загрузки столиков, если бы они были в localStorage или другом общем месте
-// });
 
 </script>
 
 <style scoped>
-/* Можно скопировать стили из TablesView.vue и адаптировать или использовать общие стили */
+/* Стили остаются такими же, как в твоем предыдущем сообщении */
 .reservations-view {
   padding: 20px;
 }
 .controls { margin-bottom: 20px; }
 .table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-.table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; } /* Уменьшил паддинги для броней */
+.table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
 .table th { background-color: #f2f2f2; font-weight: bold; }
 .table tbody tr:nth-child(even) { background-color: #f9f9f9; }
 .table tbody tr:hover { background-color: #e9e9e9; }
@@ -221,9 +206,8 @@ const deleteReservation = (reservationId) => {
 .btn-danger:hover { background-color: #c82333; }
 .btn-sm { padding: 5px 10px; font-size: 0.8em; }
 
-/* Стили для модального окна и формы (можно вынести в глобальные стили, если будут одинаковые) */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-.modal-content { background-color: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); width: 90%; max-width: 550px; /* Чуть шире для броней */ }
+.modal-content { background-color: white; padding: 25px 30px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); width: 90%; max-width: 550px; }
 .modal-content h2 { margin-top: 0; margin-bottom: 25px; color: #333; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }

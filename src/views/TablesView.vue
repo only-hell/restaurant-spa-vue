@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'; // Добавляем reactive
+import { ref, reactive } from 'vue';
 
 // Реактивная переменная для хранения списка столиков
 const tables = ref([
@@ -93,18 +93,16 @@ const tables = ref([
 
 // Состояние для модального окна
 const showModal = ref(false);
-const isEditing = ref(false); // true, если редактируем, false если добавляем
-const defaultTableForm = () => ({ // Функция для получения объекта столика по умолчанию
-  id: null,
+const isEditing = ref(false);
+const defaultTableForm = () => ({
+  // id будет присвоен при сохранении или редактировании, здесь он не нужен в явном виде для новой формы
   name: '',
   capacity: 1,
   status: 'free',
   location: '',
   isSmokingAllowed: false,
 });
-// currentTable будет хранить данные формы. Используем reactive для объекта
-const currentTable = reactive(defaultTableForm());
-
+const currentTable = reactive(defaultTableForm()); // Для полей формы (без id)
 
 // Функции для отображения статуса
 const getStatusText = (status) => {
@@ -116,135 +114,81 @@ const getStatusText = (status) => {
   return statuses[status] || status;
 };
 
-
-const getNextId = () => {
-  if (tables.value.length === 0) {
-    return 1; // Если столиков нет, начинаем с 1
-  }
-  // Находим максимальный ID среди существующих столиков
-  const maxId = Math.max(...tables.value.map(table => table.id));
-  return maxId + 1;
-};
-
-
 const getStatusClass = (status) => {
   return `status-${status}`;
+};
+
+// Функция для переиндексации ID столиков
+const reindexTableIds = () => {
+  tables.value.forEach((table, index) => {
+    table.id = index + 1;
+  });
+};
+
+// Обновленная функция getNextId
+const getNextId = () => {
+  if (tables.value.length === 0) {
+    return 1;
+  }
+  // После переиндексации, следующий ID будет просто длина + 1
+  return tables.value.length + 1;
 };
 
 // Открыть модальное окно для добавления
 const openAddModal = () => {
   isEditing.value = false;
   // Сбрасываем currentTable к значениям по умолчанию
+  // Важно: мы не устанавливаем currentTable.id здесь, он будет сгенерирован в saveTable
   Object.assign(currentTable, defaultTableForm());
   showModal.value = true;
 };
 
 // Открыть модальное окно для редактирования
-const openEditModal = (table) => {
+const openEditModal = (tableToEdit) => {
   isEditing.value = true;
-  // Копируем данные редактируемого столика в currentTable
-  // Object.assign(target, source) копирует свойства из source в target
-  Object.assign(currentTable, table);
+  // Копируем все поля, включая id, в currentTable для редактирования
+  // Этот id будет использоваться для поиска столика при сохранении
+  Object.assign(currentTable, { ...tableToEdit }); // Копируем объект, чтобы не мутировать оригинал напрямую в форме
   showModal.value = true;
 };
 
 const closeModal = () => {
   showModal.value = false;
-  // Не обязательно сбрасывать currentTable здесь, т.к. openAddModal/openEditModal это сделают
 };
 
 const saveTable = () => {
   if (isEditing.value) {
     // Редактирование существующего столика
+    // currentTable.id здесь должен содержать ID редактируемого столика
     const index = tables.value.findIndex(t => t.id === currentTable.id);
     if (index !== -1) {
-      tables.value[index] = { ...currentTable };
+      // Обновляем столик в массиве, сохраняя его оригинальный ID
+      tables.value[index] = { ...currentTable, id: tables.value[index].id };
     }
   } else {
     // Добавление нового столика
     const newTable = {
-      ...currentTable,
-      id: getNextId(), // <--- ИСПОЛЬЗУЕМ НОВУЮ ФУНКЦИЮ ЗДЕСЬ
+      ...currentTable, // Берем данные из формы
+      id: getNextId(),  // Генерируем новый ID
     };
     tables.value.push(newTable);
+    // Если строго нужна переиндексация после каждого добавления (хотя getNextId уже должен давать правильный ID)
+    // reindexTableIds(); // Обычно не нужно, если getNextId корректен
   }
   closeModal();
 };
 
-const deleteTable = (tableId) => {
+const deleteTable = (tableIdToDelete) => {
   if (confirm('Вы уверены, что хотите удалить этот столик?')) {
-    tables.value = tables.value.filter(t => t.id !== tableId);
+    tables.value = tables.value.filter(t => t.id !== tableIdToDelete);
+    reindexTableIds(); // Вызываем переиндексацию после удаления
   }
 };
 
 </script>
 
 <style scoped>
-/* ... предыдущие стили ... */
-/* Добавляем стили для формы в модальном окне */
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box; /* Чтобы padding не увеличивал общую ширину */
-}
-
-.form-group input[type="checkbox"] {
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.form-actions {
-  margin-top: 20px;
-  text-align: right;
-}
-
-.form-actions .btn {
-  margin-left: 10px;
-}
-
-/* Стили для модального окна */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Чуть темнее фон */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 25px 30px; /* Немного изменил паддинги */
-  border-radius: 8px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.25); /* Чуть выразительнее тень */
-  width: 90%;
-  max-width: 500px;
-}
-
-.modal-content h2 {
-  margin-top: 0;
-  margin-bottom: 25px; /* Увеличил отступ */
-  color: #333;
-}
-/* ... остальные стили остаются как были ... */
+/* ... все твои стили из предыдущего сообщения остаются здесь ... */
 .tables-view {
   padding: 20px;
 }
@@ -284,20 +228,20 @@ const deleteTable = (tableId) => {
   border-radius: 15px;
   color: white;
   font-size: 0.9em;
-  min-width: 110px; /* Чтобы ширина была примерно одинаковой */
+  min-width: 110px;
   display: inline-block;
   text-align: center;
 }
 
 .status-free {
-  background-color: #28a745; /* Зеленый */
+  background-color: #28a745;
 }
 .status-reserved {
-  background-color: #ffc107; /* Желтый */
+  background-color: #ffc107;
   color: #333;
 }
 .status-occupied {
-  background-color: #dc3545; /* Красный */
+  background-color: #dc3545;
 }
 
 .btn {
@@ -344,5 +288,68 @@ const deleteTable = (tableId) => {
   font-style: italic;
   text-align: center;
   margin-top: 30px;
+}
+
+/* Стили для модального окна и формы */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-group input[type="checkbox"] {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.form-actions {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.form-actions .btn {
+  margin-left: 10px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #333;
 }
 </style>
