@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import TablesView from '../views/TablesView.vue';
-import ReservationsView from '../views/ReservationsView.vue';
-import MenuView from '../views/MenuView.vue';
+import TablesView from '../views/TablesView.vue'; 
+import ReservationsView from '../views/ReservationsView.vue'; 
+import AdminMenuView from '../views/AdminMenuView.vue'; 
+import GuestMenuView from '../views/GuestMenuView.vue'; 
 
 const routes = [
   {
@@ -11,19 +12,24 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/tables',
-    name: 'Tables',
-    component: TablesView,
+    path: '/admin/tables', 
+    name: 'AdminTables',
+    component: TablesView, 
   },
   {
-    path: '/reservations',
-    name: 'Reservations',
-    component: ReservationsView,
+    path: '/admin/reservations', 
+    name: 'AdminReservations',
+    component: ReservationsView, 
   },
   {
-    path: '/menu',
-    name: 'Menu',
-    component: MenuView,
+    path: '/admin/menu', 
+    name: 'AdminMenu',
+    component: AdminMenuView, 
+  },
+  {
+    path: '/menu', 
+    name: 'GuestMenu',
+    component: GuestMenuView, 
   },
 ];
 

@@ -11,9 +11,14 @@
       </button>
       <div class="nav-links-container" :class="{ 'open': isMobileMenuOpen }">
         <router-link to="/" class="nav-link" @click="closeMobileMenu">Главная</router-link>
-        <router-link to="/tables" class="nav-link" @click="closeMobileMenu">План зала</router-link>
-        <router-link to="/reservations" class="nav-link" @click="closeMobileMenu">Бронирование</router-link>
-        <router-link to="/menu" class="nav-link" @click="closeMobileMenu">Редактор Меню</router-link>
+        <router-link to="/menu" class="nav-link" @click="closeMobileMenu">Наше Меню</router-link> <!-- Ссылка на гостевое меню -->
+        
+        <!-- Ссылки для админ-панели можно сгруппировать или выделить -->
+        <span class="nav-separator" v-if="!isMobileMenuOpen">|</span> <!-- Разделитель для десктопа -->
+        
+        <router-link to="/admin/tables" class="nav-link admin-link" @click="closeMobileMenu">План Зала</router-link>
+        <router-link to="/admin/reservations" class="nav-link admin-link" @click="closeMobileMenu">Бронирования</router-link>
+        <router-link to="/admin/menu" class="nav-link admin-link" @click="closeMobileMenu">Редактор Меню</router-link>
       </div>
     </nav>
     <main class="main-content">
@@ -45,7 +50,6 @@
 
 <script setup>
 import { ref } from 'vue';
-// import { RouterLink, RouterView } from 'vue-router'; // Не обязательно, если используем глобально
 
 const isMobileMenuOpen = ref(false);
 
@@ -59,6 +63,7 @@ const closeMobileMenu = () => {
 </script>
 
 <style>
+
 :root {
   --bronze-gold: #b8860b;
   --soft-gold: #c5a47e;
@@ -69,6 +74,7 @@ const closeMobileMenu = () => {
   --shadow-light: rgba(0, 0, 0, 0.06);
   --shadow-medium: rgba(0, 0, 0, 0.12);
   --shadow-dark: rgba(0, 0, 0, 0.18);
+  --admin-link-color: #d2691e;
 }
 
 html, body {
@@ -124,6 +130,7 @@ body {
 
 .nav-links-container {
   display: flex;
+  align-items: center; 
   gap: 10px;
 }
 
@@ -149,6 +156,27 @@ body {
 .nav-link:hover{ color: #a0720a; }
 .nav-link.router-link-exact-active { color: var(--bronze-gold); font-weight: 700; }
 
+
+.nav-link.admin-link {
+  color: var(--admin-link-color);
+}
+.nav-link.admin-link::after {
+  background-color: var(--admin-link-color);
+}
+.nav-link.admin-link:hover {
+  color: #a55010; 
+}
+.nav-link.admin-link.router-link-exact-active {
+  color: var(--admin-link-color);
+}
+.nav-separator {
+  color: #ccc;
+  margin: 0 5px;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+
 .nav-toggler {
   display: none;
   flex-direction: column;
@@ -160,7 +188,7 @@ body {
   cursor: pointer;
   padding: 0;
   z-index: 1010;
-  margin-left: auto; 
+  margin-left: auto;
 }
 .nav-toggler span {
   width: 30px; height: 3px; background: var(--bronze-gold);
@@ -195,7 +223,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     align-items: start;
-    text-align: left; /* Возвращаем для колонок */
+    text-align: left; 
 }
 .footer-logo-small {
     font-family: 'Playfair Display', serif;
@@ -255,30 +283,34 @@ body {
   .nav-links-container {
     display: none;
     flex-direction: column;
-    align-items: center; /* Центрируем ссылки в моб. меню */
+    align-items: center;
     position: absolute;
-    top: 70px; /* Высота навбара */
+    top: 70px; 
     left: 0;
     width: 100%;
     background-color: var(--card-bg);
     box-shadow: 0 5px 10px var(--shadow-light);
-    padding: 10px 0; /* Отступы для выпадающего списка */
+    padding: 10px 0; 
     border-top: 1px solid #eee;
   }
   .nav-links-container.open {
     display: flex;
   }
   .nav-link {
-    width: 90%; 
+    width: 90%;
     text-align: center;
     padding: 12px 0;
-    margin: 5px 0; 
-    border-bottom: none; 
+    margin: 5px 0;
+    border-bottom: none;
   }
-  .nav-link::after { display: none; } 
+  .nav-link::after { display: none; }
   .nav-link.router-link-exact-active, .nav-link:hover {
       background-color: var(--cream-bg);
-      color: var(--bronze-gold);
+  }
+  .nav-link.admin-link.router-link-exact-active,
+  .nav-link.admin-link:hover {
+      color: var(--admin-link-color);
+      background-color: #f0e0d0; 
   }
   .nav-toggler {
     display: flex;

@@ -169,7 +169,6 @@ const deleteTable = (tableIdToDelete) => {
 </script>
 
 <style scoped>
-/* Копируем и адаптируем стили из ReservationsView.vue, но для таблиц используем "card-view" на мобильных */
 
 /* Общие стили админки (идентичны ReservationsView) */
 .admin-view { background-color: var(--cream-bg); padding-bottom: 60px; }
@@ -232,7 +231,7 @@ const deleteTable = (tableIdToDelete) => {
 }
 .text-center { text-align: center !important; }
 
-.status-badge { /* Стили идентичны TablesView */
+.status-badge {
   padding: 6px 12px; border-radius: 18px; color: white; font-size: 0.75rem;
   font-weight: 600; min-width: 95px; display: inline-block; text-align: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.15);
@@ -241,7 +240,7 @@ const deleteTable = (tableIdToDelete) => {
 .status-reserved { background-color: #f39c12; color: #fff; }
 .status-occupied { background-color: #c0392b; }
 
-.actions-cell { /* Стили идентичны TablesView */
+.actions-cell { 
   text-align: right;
   white-space: nowrap;
 }

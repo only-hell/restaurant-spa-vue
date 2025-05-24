@@ -19,13 +19,13 @@
             <i class="fas fa-map-marker-alt action-icon"></i>
             <h3>Как нас найти</h3>
             <p>Узнайте наш адрес, часы работы и как легко добраться до нашего уютного ресторана.</p>
-            <a href="#footer-contacts" class="btn btn-primary">Контакты и Карта</a>
+            <a href="#map-location" class="btn btn-primary">Найти на карте</a>
           </div>
           <div class="action-card">
             <i class="fas fa-calendar-alt action-icon"></i>
             <h3>Забронировать столик</h3>
             <p>Выберите удобное время и идеальный столик для вашего незабываемого визита в "Золотой Гусь".</p>
-            <router-link to="/reservations" class="btn btn-primary">Забронировать</router-link>
+            <a href="https://wa.me/79991234567?text=Здравствуйте,%20хочу%20забронировать%20столик" target="_blank" class="btn btn-primary">Забронировать</a>
           </div>
         </div>
       </section>
@@ -119,7 +119,7 @@
         </button>
       </section>
 
-            <section id="testimonials" class="content-section"> 
+      <section id="testimonials" class="content-section"> 
         <h2 class="section-title">Говорят о Нас</h2>
         <div class="testimonials-container">
           <div class="testimonial-card">
@@ -169,30 +169,26 @@
         <p>Мы гордимся разнообразием наших блюд. Полное меню доступно на соответствующей странице.</p>
         <router-link to="/menu" class="btn btn-primary btn-lg">К полному меню</router-link>
       </section>
-    </div>
 
-    <footer class="home-footer" id="footer-contacts">
-      <div class="footer-content-wrapper">
-        <div class="footer-info">
-            <p class="footer-logo">Золотой Гусь</p>
-            <p>"Место, где каждый момент становится особенным"</p>
+      <!-- Новый блок с картой -->
+      <section id="map-location" class="content-section">
+        <h2 class="section-title">Мы на карте</h2>
+        <div style="text-align: center; margin-top: 20px; padding: 0 15px;">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3777.23646300201!2d50.17621378212957!3d53.21148836421058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x41661eb14dc34549%3A0x463a4a86f357f5d2!2z0KHQsNC80LDRgNGB0LrQuNC5INC90LDRhtC40L7QvdCw0LvRjNC90YvQuSDQuNGB0YHQu9C10LTQvtCy0LDRgtC10LvRjNGB0LrQuNC5INGD0L3QuNCy0LXRgNGB0LjRgtC10YIg0LjQvNC10L3QuCDQsNC60LDQtNC10LzQuNC60LAg0KEu0J8uINCa0L7RgNC-0LvQtdCy0LA!5e0!3m2!1sru!2sru!4v1734084831794!5m2!1sru!2sru"
+            width="100%" 
+            height="450" 
+            style="border:0; max-width: 900px; margin: 0 auto; display: block; border-radius: 10px; box-shadow: 0 10px 30px var(--shadow-light);" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
-        <div class="footer-contacts">
-            <p><i class="fas fa-map-marker-alt"></i> ул. Гастрономическая, 10, г. Примербург</p>
-            <p><i class="fas fa-phone"></i> +7 (123) 456-78-90</p>
-            <p><i class="fas fa-envelope"></i> info@zolotoygus.example</p>
-        </div>
-        <div class="footer-social">
-            <p>Следите за нами:</p>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" aria-label="VK"><i class="fab fa-vk"></i></a>
-        </div>
-        <div class="footer-copy">
-            <p>© {{ new Date().getFullYear() }} "Золотой Гусь". Все права защищены.</p>
-        </div>
-      </div>
-    </footer>
+      </section>
+      <!-- Конец нового блока с картой -->
+
+    </div>
+    <!-- ФУТЕР УДАЛЕН -->
   </div>
 </template>
 
@@ -338,9 +334,14 @@ const toggleStory = () => {
 }
 
 .content-section {
-  padding: 90px 0;
+  padding: 90px 0; /* Вертикальные отступы для секций */
   text-align: center;
 }
+#map-location {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .bg-alt-section {
   background-color: var(--card-bg); 
   box-shadow: 0 0 50px rgba(0,0,0,0.04) inset;
@@ -622,6 +623,10 @@ const toggleStory = () => {
   border: 1px solid #e8e3da;
   border-left: 6px solid var(--soft-gold);
   box-shadow: 0 10px 30px var(--shadow-light);
+  margin-bottom: 25px;
+}
+.special-offer-card:last-child {
+  margin-bottom: 0;
 }
 .special-offer-card h3 { font-size: 1.75rem; }
 
@@ -637,70 +642,6 @@ const toggleStory = () => {
     font-size: 1.1rem;
 }
 
-.home-footer {
-  background-color: #222;
-  color: #a9a9a9;
-  text-align: left;
-  padding: 25px 40px;
-  margin-top: 80px;
-  font-size: 0.9rem;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 -5px 15px var(--shadow-medium);
-}
-.home-footer .footer-content-wrapper {
-    max-width: 1140px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-    align-items: start;
-}
-.footer-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: var(--soft-gold);
-    margin-bottom: 8px;
-}
-.footer-info p, .footer-contacts p {
-  margin: 5px 0;
-  line-height: 1.6;
-}
-.footer-contacts i {
-    margin-right: 10px;
-    color: var(--soft-gold);
-    width: 15px;
-    text-align: center;
-}
-.footer-social {
-    margin-top: 10px;
-}
-.footer-social p {
-    margin-bottom: 10px;
-    font-weight: 600;
-    color: #ccc;
-}
-.footer-social a {
-    color: #ccc;
-    margin-right: 15px;
-    font-size: 1.3rem;
-    transition: color 0.2s ease;
-}
-.footer-social a:hover {
-    color: var(--soft-gold);
-}
-.footer-social a:last-child {
-    margin-right: 0;
-}
-.footer-copy {
-    grid-column: 1 / -1;
-    text-align: center;
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #383838;
-    font-size: 0.8rem;
-    color: #888;
-}
 
 @media (max-width: 992px) {
   .main-page-content { padding: 0 25px; }
@@ -724,7 +665,6 @@ const toggleStory = () => {
 
   .actions-grid { grid-template-columns: 1fr; }
   .famous-guests-grid img { aspect-ratio: 4 / 3; }
-  .home-footer .footer-content-wrapper { grid-template-columns: 1fr; text-align: center; }
 }
 
 @media (max-width: 480px) {

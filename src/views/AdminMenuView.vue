@@ -9,16 +9,16 @@
 
     <div class="admin-main-content">
       <section class="controls-section content-section">
-        <button @click="openAddModal" class="btn btn-primary btn-lg-admin"> 
+        <button @click="openAddModal" class="btn btn-primary btn-lg-admin">
           <i class="fas fa-plus-circle"></i> Добавить новую позицию
         </button>
       </section>
 
       <section class="table-list-section content-section">
         <h2 class="section-title-admin">Все Позиции Меню</h2>
-        
-        <div v-if="menuItems.length > 0" class="table-container"> 
-          <table class="table stylish-table responsive-table"> 
+
+        <div v-if="menuItems.length > 0" class="table-container">
+          <table class="table stylish-table responsive-table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -42,7 +42,7 @@
                   <button @click="openEditModal(item)" class="btn btn-sm btn-action-edit">
                     <i class="fas fa-edit"></i> <span class="btn-text-desktop">Редактировать</span>
                   </button>
-                  <button @click="deleteMenuItem(item.id)" class="btn btn-sm btn-action-delete">
+                  <button @click="deleteMenuItemLocal(item.id)" class="btn btn-sm btn-action-delete">
                     <i class="fas fa-trash-alt"></i> <span class="btn-text-desktop">Удалить</span>
                   </button>
                 </td>
@@ -56,8 +56,8 @@
         </p>
       </section>
 
-      
-      <section class="info-block-section content-section bg-alt-section-admin"> 
+
+      <section class="info-block-section content-section bg-alt-section-admin">
         <h2 class="section-title-admin">Советы по Меню</h2>
         <div class="info-cards-grid">
           <div class="info-card">
@@ -79,11 +79,11 @@
       </section>
     </div>
 
-   
+
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h2 class="modal-title">{{ isEditing ? 'Редактировать позицию' : 'Новая позиция в меню' }}</h2>
-        <form @submit.prevent="saveMenuItem">
+        <form @submit.prevent="saveMenuItemLocal">
           <div class="form-group">
             <label for="itemName">Название блюда/напитка:</label>
             <input type="text" id="itemName" v-model="currentItem.name" required />
@@ -122,53 +122,66 @@
 </template>
 
 <script setup>
-// ... (весь <script setup> остается таким же, как в твоем коде)
 import { ref, reactive } from 'vue';
-
-const menuItems = ref([
-  { id: 1, name: 'Цезарь с курицей', category: 'Салаты', price: 450.00, description: 'Классический салат Цезарь с обжаренной куриной грудкой.', isVegetarian: false },
-  { id: 2, name: 'Борщ украинский', category: 'Супы', price: 350.00, description: 'Наваристый борщ с говядиной, подается со сметаной.', isVegetarian: false },
-  { id: 3, name: 'Паста Карбонара', category: 'Горячее', price: 550.00, description: 'Спагетти с беконом, яйцом и сыром Пармезан.', isVegetarian: false },
-  { id: 4, name: 'Грибной крем-суп', category: 'Супы', price: 320.00, description: 'Нежный крем-суп из шампиньонов.', isVegetarian: true },
-  { id: 5, name: 'Чизкейк Нью-Йорк', category: 'Десерты', price: 280.00, description: 'Классический чизкейк на песочной основе.', isVegetarian: true },
-  { id: 6, name: 'Морс клюквенный', category: 'Напитки', price: 150.00, description: 'Домашний клюквенный морс, 0.5л.', isVegetarian: true },
-]);
-
-const availableCategories = ref(['Закуски', 'Салаты', 'Супы', 'Горячее', 'Гарниры', 'Десерты', 'Напитки', 'Алкоголь']);
+// Импортируем состояние и функции из menuStore
+// Убедитесь, что путь к menuStore.js правильный!
+import { menuItems, availableCategories, addMenuItem, updateMenuItem, removeMenuItem } from '@/stores/menuStore';
 
 const showModal = ref(false);
 const isEditing = ref(false);
 
+// Структура данных для формы. ID нужен для редактирования.
 const defaultMenuItemForm = () => ({
-  name: '', category: '', price: 0.00, description: '', isVegetarian: false,
+  id: null,
+  name: '',
+  category: '',
+  price: 0.00,
+  description: '',
+  isVegetarian: false,
 });
 
 const currentItem = reactive(defaultMenuItemForm());
 
-const reindexMenuItemIds = () => { menuItems.value.forEach((item, index) => { item.id = index + 1; }); };
-const getNextMenuItemId = () => (menuItems.value.length === 0 ? 1 : menuItems.value.length + 1);
-
-const openAddModal = () => { isEditing.value = false; Object.assign(currentItem, defaultMenuItemForm()); currentItem.category = ''; showModal.value = true; };
-const openEditModal = (itemToEdit) => { isEditing.value = true; Object.assign(currentItem, { ...itemToEdit }); showModal.value = true; };
-const closeModal = () => { showModal.value = false; };
-
-const saveMenuItem = () => {
-  if (!currentItem.name || !currentItem.category || currentItem.price < 0) {
-    alert('Пожалуйста, заполните все обязательные поля (Название, Категория) и убедитесь, что цена не отрицательная.'); return;
-  }
-  if (isEditing.value) {
-    const index = menuItems.value.findIndex(i => i.id === currentItem.id);
-    if (index !== -1) menuItems.value[index] = { ...currentItem, id: menuItems.value[index].id };
-  } else {
-    menuItems.value.push({ ...currentItem, id: getNextMenuItemId() });
-  }
-  closeModal();
+const openAddModal = () => {
+  isEditing.value = false;
+  Object.assign(currentItem, defaultMenuItemForm()); // Сброс формы
+  currentItem.category = ''; // Явный сброс категории для нового элемента
+  showModal.value = true;
 };
 
-const deleteMenuItem = (itemIdToDelete) => {
+const openEditModal = (itemToEdit) => {
+  isEditing.value = true;
+  // Клонируем объект, чтобы изменения в форме не затрагивали сразу store до сохранения
+  Object.assign(currentItem, { ...itemToEdit });
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+// Переименована, чтобы не конфликтовать с импортированной saveMenuItem, если бы она была
+const saveMenuItemLocal = () => {
+  let success = false;
+  if (isEditing.value) {
+    // Передаем копию currentItem в функцию store
+    success = updateMenuItem({ ...currentItem });
+  } else {
+    // Для нового элемента id будет присвоен в addMenuItem, так что его можно не передавать или передать null
+    // Создаем объект без id для передачи в addMenuItem
+    const { id, ...newItemData } = currentItem;
+    success = addMenuItem(newItemData);
+  }
+
+  if (success) { // Если операция в store прошла успешно
+    closeModal();
+  }
+  // Если !success, alert уже был показан в функции store
+};
+
+const deleteMenuItemLocal = (itemIdToDelete) => {
   if (confirm('Вы уверены, что хотите удалить эту позицию из меню?')) {
-    menuItems.value = menuItems.value.filter(item => item.id !== itemIdToDelete);
-    reindexMenuItemIds();
+    removeMenuItem(itemIdToDelete);
   }
 };
 </script>
@@ -230,16 +243,16 @@ const deleteMenuItem = (itemIdToDelete) => {
 .item-description {
     font-size: 0.85em;
     color: #555;
-    white-space: normal; 
+    white-space: normal;
     word-break: break-word;
-    min-width: 200px; 
+    min-width: 200px;
 }
 .category-badge {
     background-color: var(--soft-gold);
     color: var(--dark-text);
-    padding: 5px 12px; 
-    border-radius: 15px; 
-    font-size: 0.75em; 
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
     font-weight: 600;
     display: inline-block;
     box-shadow: 0 1px 3px var(--shadow-light);
@@ -248,116 +261,155 @@ const deleteMenuItem = (itemIdToDelete) => {
 .actions-cell { text-align: right; white-space: nowrap; }
 .actions-cell .btn { margin-left: 8px; padding: 6px 10px; font-size: 0.8rem; }
 .actions-cell .btn i { margin-right: 5px; }
-.btn-text-desktop { /* Скрывается на мобильных */ }
+.btn-text-desktop {}
 
-.empty-state { 
-.info-block-section { 
-.bg-alt-section { 
-.info-cards-grid { 
-.info-card {
-.info-icon {
-.modal-overlay, .modal-content, .modal-title, .form-row, .form-group, .form-actions {
-.empty-state { color: #666; font-style: normal; text-align: center; margin-top: 30px; padding: 30px; background-color: var(--card-bg); border-radius: 10px; box-shadow: 0 6px 20px var(--shadow-light); font-size: 1.05em; border: 1px dashed var(--soft-gold); }
-.empty-state i { margin-right: 12px; color: var(--bronze-gold); font-size: 1.2em; }
-.info-block-section { padding-top: 30px; }
-.info-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
-.info-card { background-color: var(--card-bg); padding: 25px; border-radius: 10px; box-shadow: 0 7px 22px var(--shadow-light); text-align: left; border-top: 4px solid var(--bronze-gold); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.info-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--shadow-medium); }
-.info-icon { font-size: 2rem; color: var(--bronze-gold); margin-bottom: 18px; display: block; }
-.info-card h3 { font-size: 1.3rem; margin-bottom: 12px; color: var(--bronze-gold); }
-.info-card p { font-size: 0.9rem; line-height: 1.65; color: var(--dark-text); }
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(30, 20, 10, 0.7); display: flex; justify-content: center; align-items: center; z-index: 1050; }
-.modal-content { background-color: var(--card-bg); padding: 30px 35px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); width: 90%; max-width: 600px; }
-.modal-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; margin-top: 0; margin-bottom: 25px; color: var(--bronze-gold); text-align: center; padding-bottom: 15px; border-bottom: 1px solid #e0dacd; }
-.form-row { display: flex; gap: 20px; margin-bottom: 18px; }
-.form-group.column { flex: 1; margin-bottom: 0; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 0.9rem; color: var(--dark-text); }
-.form-group input[type="text"], .form-group input[type="number"], .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid #d0c9bf; border-radius: 5px; box-sizing: border-box; font-family: 'Lato', sans-serif; font-size: 0.95em; transition: border-color 0.2s ease, box-shadow 0.2s ease; background-color: #fff; }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--soft-gold); box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2); outline: none; }
-.form-group textarea { min-height: 100px; }
-.checkbox-group { display: flex; align-items: center; }
-.checkbox-group input[type="checkbox"] { margin-right: 10px; width: auto; height: 1.1em; accent-color: var(--bronze-gold); }
-.checkbox-group label { margin-bottom: 0; font-weight: normal; }
-.form-actions { margin-top: 25px; text-align: right; }
-.form-actions .btn { margin-left: 10px; padding: 9px 22px; }
-
-
-/* Адаптивная таблица: превращение в "карточки" на мобильных */
-@media (max-width: 768px) {
-  .stylish-table.responsive-table thead {
-    display: none;
-  }
-  .stylish-table.responsive-table, 
-  .stylish-table.responsive-table tbody, 
-  .stylish-table.responsive-table tr, 
-  .stylish-table.responsive-table td {
-    display: block;
-    width: 100% !important;
-    box-sizing: border-box;
-  }
-  .stylish-table.responsive-table tr {
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px var(--shadow-light);
-    overflow: hidden;
-    border: 1px solid #e0dacd;
-    background-color: var(--card-bg);
-  }
-  .stylish-table.responsive-table td {
-    text-align: right;
-    padding-left: 45%;
-    position: relative;
-    border-bottom: 1px dotted #eee;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-  .stylish-table.responsive-table td:last-child {
-    border-bottom: none;
-  }
-  .stylish-table.responsive-table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 10px;
-    width: calc(45% - 20px);
-    padding-right: 10px;
-    font-weight: 600;
-    text-align: left;
-    white-space: nowrap;
-    color: var(--bronze-gold);
-    font-size: 0.8em;
-  }
-  .stylish-table.responsive-table td.text-center, 
-  .stylish-table.responsive-table td.text-right {
-      text-align: right;
-  }
-  .actions-cell { /* Для мобильной версии таблицы */
-    text-align: center;
-    padding-top: 15px;
-  }
-  .actions-cell .btn {
-    display: inline-block;
-    margin: 5px;
-    width: auto;
-  }
-  .btn-text-desktop {
-    display: none;
-  }
-   .item-description { /* На мобильных описание занимает всю ширину "поля" */
-      min-width: auto;
-      text-align: left;
-      padding-left: 10px; 
-  }
-  .item-description::before {
-      width: 100%;
-      position: static;
-      display: block;
-      margin-bottom: 5px;
-      text-align: left;
-  }
+.empty-state {
+  color: #666;
+  font-style: normal;
+  text-align: center;
+  margin-top: 30px;
+  padding: 30px;
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px var(--shadow-light);
+  font-size: 1.05em;
+  border: 1px dashed var(--soft-gold);
+}
+.empty-state i {
+  margin-right: 12px;
+  color: var(--bronze-gold);
+  font-size: 1.2em;
 }
 
-/* Общая адаптивность для админки */
+.info-block-section {
+  padding-top: 30px;
+}
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+.info-card {
+  background-color: var(--card-bg);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 7px 22px var(--shadow-light);
+  text-align: left;
+  border-top: 4px solid var(--bronze-gold);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px var(--shadow-medium);
+}
+.info-icon {
+  font-size: 2rem;
+  color: var(--bronze-gold);
+  margin-bottom: 18px;
+  display: block;
+}
+.info-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: var(--bronze-gold);
+}
+.info-card p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--dark-text);
+}
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(30, 20, 10, 0.7);
+  display: flex; justify-content: center; align-items: center; z-index: 1050;
+}
+.modal-content {
+  background-color: var(--card-bg); padding: 30px 35px; border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  width: 90%; max-width: 600px;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif; font-size: 1.7rem;
+  margin-top: 0; margin-bottom: 25px; color: var(--bronze-gold);
+  text-align: center; padding-bottom: 15px; border-bottom: 1px solid #e0dacd;
+}
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.form-group.column {
+  flex: 1;
+  margin-bottom: 0;
+}
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block; margin-bottom: 7px; font-weight: 600;
+  font-size: 0.9rem; color: var(--dark-text);
+}
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid #d0c9bf;
+  border-radius: 5px; box-sizing: border-box; font-family: 'Lato', sans-serif;
+  font-size: 0.95em; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--soft-gold);
+    box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2);
+    outline: none;
+}
+.form-group textarea {
+  min-height: 100px;
+}
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+.checkbox-group input[type="checkbox"] {
+  margin-right: 10px;
+  width: auto;
+  height: 1.1em;
+  accent-color: var(--bronze-gold);
+}
+.checkbox-group label {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+.form-actions {
+  margin-top: 25px;
+  text-align: right;
+}
+.form-actions .btn {
+  margin-left: 10px;
+  padding: 9px 22px;
+}
+
+@media (max-width: 768px) {
+  .stylish-table.responsive-table thead { display: none; }
+  .stylish-table.responsive-table,
+  .stylish-table.responsive-table tbody,
+  .stylish-table.responsive-table tr,
+  .stylish-table.responsive-table td { display: block; width: 100% !important; box-sizing: border-box; }
+  .stylish-table.responsive-table tr { margin-bottom: 15px; border-radius: 8px; box-shadow: 0 4px 10px var(--shadow-light); overflow: hidden; border: 1px solid #e0dacd; background-color: var(--card-bg); }
+  .stylish-table.responsive-table td { text-align: right; padding-left: 45%; position: relative; border-bottom: 1px dotted #eee; padding-top: 10px; padding-bottom: 10px; }
+  .stylish-table.responsive-table td:last-child { border-bottom: none; }
+  .stylish-table.responsive-table td::before { content: attr(data-label); position: absolute; left: 10px; width: calc(45% - 20px); padding-right: 10px; font-weight: 600; text-align: left; white-space: nowrap; color: var(--bronze-gold); font-size: 0.8em; }
+  .stylish-table.responsive-table td.text-center,
+  .stylish-table.responsive-table td.text-right { text-align: right; }
+  .actions-cell { text-align: center; padding-top: 15px; }
+  .actions-cell .btn { display: inline-block; margin: 5px; width: auto; }
+  .btn-text-desktop { display: none; }
+  .item-description { min-width: auto; text-align: left; padding-left: 10px; }
+  .item-description::before { width: 100%; position: static; display: block; margin-bottom: 5px; text-align: left; }
+}
+
 @media (max-width: 992px) {
     .admin-main-content { max-width: 100%; padding: 0 20px; }
     .admin-main-content > .bg-alt-section-admin { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;}

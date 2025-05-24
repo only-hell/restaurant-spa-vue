@@ -435,9 +435,6 @@ const deleteReservation = (resIdToDelete) => {
     .admin-main-content { padding: 0 10px; }
     .admin-main-content > .bg-alt-section-admin { margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px;}
     .section-title-admin { font-size: clamp(1.4rem, 4vw, 1.8rem); }
-
-    /* .table-responsive-wrapper удаляем, т.к. таблица сама адаптируется */
-    
     .info-cards-grid { grid-template-columns: 1fr; }
     .modal-content { padding: 20px; width: calc(100% - 20px); margin: 10px;}
     .modal-title { font-size: 1.4rem; }
